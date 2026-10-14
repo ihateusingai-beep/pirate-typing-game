@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>戰鬥畫面 v0.4 — 學習目標整合</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0820;
+    --bg2: #14112e;
+    --bg3: #1d1a3d;
+    --line: #2e2952;
+    --line-soft: #1f1a3d;
+    --ink: #e9e5ff;
+    --ink-mute: #9b97c4;
+    --ink-dim: #6c6890;
+    --primary: #6366f1;
+    --gold: #fbbf24;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --green: #10b981;
+    --red: #f43f5e;
+    --purple: #a855f7;
+    --orange: #fb923c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 28px 20px 60px;
+  }
+  .container { max-width: 1320px; margin: 0 auto; }
+
+  /* Hero */
+  .hero { text-align: center; margin-bottom: 36px; }
+  .hero .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    color: var(--cyan);
+    padding: 5px 14px; border-radius: 16px;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 38px; margin: 14px 0 4px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .sub { color: var(--ink-mute); font-size: 14px; }
+
+  /* Section title */
+  .sec-title {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 22px; margin: 36px 0 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sec-title .num {
+    font-size: 11px; color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    padding: 2px 10px; border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Learning objective badges */
+  .obj-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .obj-badge {
+    background: linear-gradient(135deg, var(--bg2), var(--bg));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .obj-badge .icon-box {
+    aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.15) 0%, transparent 70%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .obj-badge .num-tag {
+    position: absolute; top: 10px; left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--cyan);
+  }
+  .obj-badge .title {
+    font-size: 12px; font-weight: 600;
+    color: var(--ink); margin-bottom: 4px;
+  }
+  .obj-badge .desc {
+    font-size: 10px; color: var(--ink-mute);
+    line-height: 1.4;
+  }
+
+  /* Level track - 16 levels */
+  .level-track {
+    background: linear-gradient(135deg, var(--bg2), var(--bg));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px 20px;
+    margin-bottom: 24px;
+  }
+  .level-rail {
+    position: relative;
+    height: 8px;
+    background: linear-gradient(90deg,
+      var(--ink-dim) 0%, var(--ink-dim) 5%,
+      var(--cyan) 5%, var(--cyan) 38%,
+      var(--purple) 38%, var(--purple) 70%,
+      var(--red) 70%, var(--red) 100%);
+    border-radius: 4px;
+    margin: 30px 0 30px;
+    opacity: 0.4;
+  }
+  .level-markers {
+    display: flex; justify-content: space-between;
+    position: relative;
+  }
+  .level-marker {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1;
+    position: relative;
+  }
+  .level-bubble {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    font-weight: 600;
+    position: absolute;
+    top: -16px; left: 50%; transform: translateX(-50%);
+    color: var(--ink-mute);
+    z-index: 2;
+  }
+  .level-marker.tutorial .level-bubble {
+    background: linear-gradient(135deg, var(--cyan), var(--primary));
+    color: white;
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+  }
+  .level-marker.done .level-bubble {
+    border-color: var(--cyan); color: var(--cyan);
+  }
+  .level-marker.boss .level-bubble {
+    background: linear-gradient(135deg, var(--red), var(--gold));
+    border-color: var(--red);
+    color: white;
+    width: 40px; height: 40px;
+    top: -20px;
+    box-shadow: 0 0 16px var(--red);
+  }
+  .level-name {
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-top: 28px;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 70px;
+  }
+  .level-name strong {
+    display: block;
+    color: var(--gold);
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  .level-marker.tutorial .level-name strong { color: var(--cyan); }
+  .level-marker.boss .level-name strong { color: var(--red); }
+
+  /* Learning tag pills on bubbles */
+  .l-tag {
+    position: absolute;
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+    white-space: nowrap;
+    z-index: 3;
+  }
+  .l-tag.t1 { top: -34px; }
+  .l-tag.t2 { top: -34px; right: -38px; left: auto; transform: none; }
+
+  /* Learning zone detail card */
+  .learning-detail {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .learning-detail .head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .learning-detail .icon-large {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+    border: 1px solid var(--line);
+  }
+  .learning-detail h4 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 18px;
+  }
+  .learning-detail .lvs {
+    margin-left: auto; font-size: 10px;
+    color: var(--cyan); font-family: 'JetBrains Mono', monospace;
+    background: rgba(34, 211, 238, 0.1);
+    padding: 3px 10px; border-radius: 6px;
+    border: 1px solid rgba(34, 211, 238, 0.3);
+  }
+  .learning-detail p {
+    font-size: 13px; color: var(--ink-mute);
+    line-height: 1.6;
+  }
+
+  /* ── Keyboard zones diagram ──────────────────── */
+  .kb-zones {
+    background: linear-gradient(135deg, var(--bg2), var(--bg));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+  .kb-zones h3 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 18px; margin-bottom: 4px;
+  }
+  .kb-zones .tag {
+    font-size: 10px; color: var(--ink-dim);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+
+  .kb-diagram {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 18px;
+  }
+  .kb-zone {
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kb-zone.zone-main {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 20px -4px var(--primary);
+    flex: 2;
+  }
+  .kb-zone.zone-num {
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(34, 211, 238, 0.05));
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 20px -4px var(--cyan);
+    flex: 1;
+  }
+  .kb-zone.zone-edit {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 20px -4px var(--gold);
+    flex: 1;
+  }
+  .kb-zone .label {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .kb-zone.zone-main .label { color: var(--primary); }
+  .kb-zone.zone-num .label { color: var(--cyan); }
+  .kb-zone.zone-edit .label { color: var(--gold); }
+  .kb-zone .keys {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-mute);
+  }
+
+  .zone-keys {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .zone-card {
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .zone-card .head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .zone-card .head .swatch {
+    width: 12px; height: 12px; border-radius: 50%;
+  }
+  .zone-card.main .head .swatch { background: var(--primary); }
+  .zone-card.num .head .swatch { background: var(--cyan); }
+  .zone-card.edit .head .swatch { background: var(--gold); }
+  .zone-card .key-list {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+  .zone-card .k {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 3px 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+
+  /* ── Cap Lock system ──────────────────── */
+  .caplock-section {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin-bottom: 14px;
+  }
+  .caplock-card {
+    background: linear-gradient(135deg, var(--bg2), var(--bg));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .caplock-card h3 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 18px; margin-bottom: 4px;
+  }
+  .caplock-card .tag {
+    font-size: 10px; color: var(--ink-dim);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+  .cap-states {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .cap-state {
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .cap-state.off {
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+  .cap-state.on {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  .cap-state .lamp {
+    width: 32px; height: 32px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    color: white;
+  }
+  .cap-state.off .lamp {
+    background: var(--purple);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+  }
+  .cap-state.on .lamp {
+    background: var(--gold);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+  }
+  .cap-state .label {
+    font-size: 11px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .cap-state.off .label { color: var(--purple); }
+  .cap-state.on .label { color: var(--gold); }
+  .cap-state .sub {
+    font-size: 10px; color: var(--ink-mute);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Spell examples per level */
+  .spell-examples {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .spell-examples h3 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 18px; margin-bottom: 14px;
+  }
+  .spell-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .spell-item {
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+  }
+  .spell-item .lv {
+    position: absolute; top: 4px; left: 6px;
+    font-size: 9px; color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .spell-item .combo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 600;
+    margin: 8px 0 6px;
+    letter-spacing: 0.1em;
+  }
+  .spell-item .combo .caps { color: var(--gold); }
+  .spell-item .combo .low { color: var(--cyan); }
+  .spell-item .combo .enter { color: var(--pink); }
+  .spell-item .name {
+    font-size: 11px; color: var(--ink-mute);
+  }
+
+  /* ── Backspace/Delete scenarios ──────────────────── */
+  .scenarios-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .scenario {
+    background: linear-gradient(135deg, var(--bg2), var(--bg));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario h4 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 16px; margin-bottom: 4px;
+  }
+  .scenario .scenario-tag {
+    font-size: 10px; color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    padding: 2px 8px; border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .scenario .visual {
+    aspect-ratio: 16/9;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario .caption {
+    font-size: 11px; color: var(--ink-mute);
+    line-height: 1.5;
+  }
+  .scenario .key-pill {
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  .scenario .key-pill.bs { color: var(--orange); border-color: var(--orange); }
+  .scenario .key-pill.del { color: var(--red); border-color: var(--red); }
+
+  /* ── Enemy with typo + cap lock ──────────────────── */
+  .typo-enemy {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .typo-enemy .enemy-mini {
+    background: var(--bg);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--red);
+    position: relative;
+  }
+  .typo-enemy .enemy-mini::after {
+    content: '✗';
+    position: absolute;
+    top: -6px; right: -6px;
+    background: var(--red);
+    color: white;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit';
+  }
+  .typo-enemy .bs-arrow {
+    color: var(--orange);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Cap enemy */
+  .cap-enemy {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .cap-enemy .e {
+    background: var(--bg);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--gold);
+    box-shadow: 0 0 10px -2px var(--gold);
+  }
+  .cap-enemy .e.low {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 10px -2px var(--cyan);
+  }
+  .cap-enemy .lock {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    background: var(--gold);
+    color: var(--bg);
+    font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  /* Delete obstacle */
+  .del-obstacle {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .del-obstacle .block {
+    background: var(--red);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 0 12px -2px var(--red);
+  }
+  .del-obstacle .arrow {
+    color: var(--red);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center; margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--line);
+    font-size: 11px; color: var(--ink-dim);
+  }
+
+  /* Quick concept grid for compact summary */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .quick-card {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .quick-card .icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .quick-card .label {
+    font-size: 11px; color: var(--ink-mute);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .quick-card .text {
+    font-size: 13px; color: var(--ink);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <div class="tag">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+      Combat v0.4 · Learning-Integrated
+    </div>
+    <h1>5 大學習目標 × 16 關卡</h1>
+    <div class="sub">認識鍵盤 · 小楷字母 · Enter · Backspace · Cap Lock</div>
+  </div>
+
+  <!-- ════════════ 5 Learning Objectives ════════════ -->
+  <div class="sec-title">
+    <span class="num">①</span>
+    5 大學習目標
+  </div>
+
+  <div class="obj-grid">
+    <div class="obj-badge">
+      <div class="num-tag">①</div>
+      <div class="icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5">
+          <rect x="2" y="6" width="20" height="12" rx="2"/>
+          <path d="M6 10h0M10 10h0M14 10h0M18 10h0M6 14h12"/>
+        </svg>
+      </div>
+      <div class="title">認識鍵盤 3 區</div>
+      <div class="desc">主鍵盤 / 數字區 / 編輯區</div>
+    </div>
+    <div class="obj-badge">
+      <div class="num-tag">②</div>
+      <div class="icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5">
+          <text x="12" y="18" text-anchor="middle" font-family="DM Serif Display" font-size="18" fill="var(--cyan)" stroke="none">a</text>
+        </svg>
+      </div>
+      <div class="title">小楷字母輸入</div>
+      <div class="desc">a-z · 26 個字符</div>
+    </div>
+    <div class="obj-badge">
+      <div class="num-tag">③</div>
+      <div class="icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5">
+          <path d="M14 5l3 3M17 8l-7.5 7.5L7 17l1.5-2.5L16 7"/>
+        </svg>
+      </div>
+      <div class="title">英文打字遊戲</div>
+      <div class="desc">序列 + 完整單詞</div>
+    </div>
+    <div class="obj-badge">
+      <div class="num-tag">④</div>
+      <div class="icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5">
+          <path d="M9 10l-4 2 4 2M15 10l4 2-4 2"/>
+        </svg>
+      </div>
+      <div class="title">Enter / Del / BS</div>
+      <div class="desc">完成 / 清除 / 修正</div>
+    </div>
+    <div class="obj-badge">
+      <div class="num-tag">⑤</div>
+      <div class="icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5">
+          <rect x="4" y="8" width="16" height="8" rx="2"/>
+          <path d="M9 4h2M13 4h2"/>
+        </svg>
+      </div>
+      <div class="title">Cap Lock 切換</div>
+      <div class="desc">大階 / 小階</div>
+    </div>
+  </div>
+
+  <!-- ════════════ 16 Level Track ════════════ -->
+  <div class="sec-title">
+    <span class="num">②</span>
+    16 關卡進度 · L0 教學 → L15 BOSS
+  </div>
+
+  <div class="level-track">
+    <div class="level-rail"></div>
+    <div class="level-markers">
+
+      <div class="level-marker tutorial">
+        <div class="level-bubble">0</div>
+        <div class="level-name"><strong>教學</strong>3 區介紹</div>
+      </div>
+
+      <div class="level-marker done">
+        <div class="level-bubble">1</div>
+        <div class="level-name"><strong>學徒</strong>左手 ASD</div>
+      </div>
+      <div class="level-marker done">
+        <div class="level-bubble">2</div>
+        <div class="level-name"><strong>學徒</strong>右手 JKL</div>
+      </div>
+      <div class="level-marker done">
+        <div class="level-bubble">3</div>
+        <div class="level-name"><strong>學徒</strong>數字 1-3</div>
+      </div>
+      <div class="level-marker done">
+        <div class="level-bubble">4</div>
+        <div class="level-name"><strong>學徒</strong>數字 4-6</div>
+      </div>
+
+      <div class="level-marker">
+        <div class="level-bubble">5</div>
+        <div class="level-name"><strong>學徒</strong>+ Enter ↵</div>
+      </div>
+
+      <div class="level-marker">
+        <div class="level-bubble">6</div>
+        <div class="level-name"><strong>見習</strong>序列 ABC</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">7</div>
+        <div class="level-name"><strong>見習</strong>跳躍 AJK</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">8</div>
+        <div class="level-name"><strong>見習</strong>+ Backspace</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">9</div>
+        <div class="level-name"><strong>見習</strong>0-9 全</div>
+      </div>
+
+      <div class="level-marker">
+        <div class="level-bubble">10</div>
+        <div class="level-name"><strong>見習</strong>Enter 序列</div>
+      </div>
+
+      <div class="level-marker">
+        <div class="level-bubble">11</div>
+        <div class="level-name"><strong>法師</strong>+ Cap Lock</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">12</div>
+        <div class="level-name"><strong>法師</strong>大階混合</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">13</div>
+        <div class="level-name"><strong>法師</strong>+ Delete</div>
+      </div>
+      <div class="level-marker">
+        <div class="level-bubble">14</div>
+        <div class="level-name"><strong>大法師</strong>單詞 HELP</div>
+      </div>
+
+      <div class="level-marker boss">
+        <div class="level-bubble">15</div>
+        <div class="level-name"><strong>宗主</strong>DRAGON!</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════ Keyboard Zones (L0) ════════════ -->
+  <div class="sec-title">
+    <span class="num">③</span>
+    L0 教學關 · 鍵盤 3 大區域
+  </div>
+
+  <div class="kb-zones">
+    <h3>鍵盤結構 · 3 區介紹</h3>
+    <div class="tag">Main · Number · Edit zone</div>
+
+    <div class="kb-diagram">
+      <div class="kb-zone zone-main">
+        <div class="label">主鍵盤區 (Main)</div>
+        <div class="keys">QWERTYUIOP · ASDFGHJKL · ZXCVBNM</div>
+      </div>
+      <div class="kb-zone zone-num">
+        <div class="label">數字區 · 頂排 (Number)</div>
+        <div class="keys">1234567890</div>
+      </div>
+      <div class="kb-zone zone-edit">
+        <div class="label">編輯區 (Edit)</div>
+        <div class="keys">← ↑ ↓ → Home End PgUp PgDn ÷ Insert ÷ Backspace ÷ Delete ÷ Enter</div>
+      </div>
+    </div>
+
+    <div class="zone-keys">
+      <div class="zone-card main">
+        <div class="head"><span class="swatch"></span>主鍵盤區 · 學徒戰場</div>
+        <div class="key-list">
+          <span class="k">Q</span><span class="k">W</span><span class="k">E</span><span class="k">R</span><span class="k">T</span><span class="k">Y</span><span class="k">U</span><span class="k">I</span><span class="k">O</span><span class="k">P</span>
+          <span class="k">A</span><span class="k">S</span><span class="k">D</span><span class="k">F</span><span class="k">G</span><span class="k">H</span><span class="k">J</span><span class="k">K</span><span class="k">L</span><span class="k">;</span>
+          <span class="k">Z</span><span class="k">X</span><span class="k">C</span><span class="k">V</span><span class="k">B</span><span class="k">N</span><span class="k">M</span>
+        </div>
+      </div>
+      <div class="zone-card num">
+        <div class="head"><span class="swatch"></span>數字區 · 召喚之門</div>
+        <div class="key-list">
+          <span class="k">1</span><span class="k">2</span><span class="k">3</span>
+          <span class="k">4</span><span class="k">5</span><span class="k">6</span>
+          <span class="k">7</span><span class="k">8</span><span class="k">9</span>
+          <span class="k">0</span>
+        </div>
+      </div>
+      <div class="zone-card edit">
+        <div class="head"><span class="swatch"></span>編輯區 · 控制之翼</div>
+        <div class="key-list">
+          <span class="k">←</span><span class="k">↑</span><span class="k">↓</span><span class="k">→</span>
+          <span class="k">Home</span><span class="k">End</span>
+          <span class="k">PgUp</span><span class="k">PgDn</span>
+          <span class="k">⌫</span><span class="k">⌦</span>
+          <span class="k">↵</span>
+          <span class="k">Caps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Cap Lock system ════════════ -->
+  <div class="sec-title">
+    <span class="num">④</span>
+    Cap Lock 系統 · 大小階切換
+  </div>
+
+  <div class="caplock-section">
+    <div class="caplock-card">
+      <h3>HUD Cap Lock 指示燈</h3>
+      <div class="tag">Visual state toggle</div>
+      <div class="cap-states">
+        <div class="cap-state off">
+          <div class="lamp">a</div>
+          <div class="label">OFF · 小階</div>
+          <div class="sub">a b c d · 1 2 3</div>
+        </div>
+        <div class="cap-state on">
+          <div class="lamp">A</div>
+          <div class="label">ON · 大階</div>
+          <div class="sub">A B C D · ! @ #</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caplock-card">
+      <h3>敵人符文顏色</h3>
+      <div class="tag">Rune color reflects case</div>
+      <div class="cap-states" style="grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="cap-enemy">
+          <div class="e low">a</div>
+          <span style="font-size: 11px; color: var(--cyan);">小階</span>
+        </div>
+        <div class="cap-enemy">
+          <div class="e">A</div>
+          <span style="font-size: 11px; color: var(--gold);">大階</span>
+          <span class="lock"></span>
+        </div>
+      </div>
+      <p style="margin-top: 14px; font-size: 12px; color: var(--ink-mute); line-height: 1.6;">
+        <strong style="color: var(--gold);">BOSS Lv15</strong> 嘅spell demo：<br/>
+        <code style="background: var(--bg3); padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 13px;">
+          <span style="color: var(--gold);">D</span><span style="color: var(--gold);">R</span><span style="color: var(--gold);">A</span><span style="color: var(--gold);">G</span><span style="color: var(--gold);">O</span><span style="color: var(--gold);">N</span><span style="color: var(--pink);">!</span>
+        </code><br/>
+        全大階 → 按 Caps Lock 一次，再順序打 DRAGON + Enter
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════════ Spell examples per level ════════════ -->
+  <div class="sec-title">
+    <span class="num">⑤</span>
+    咒語範例 · 16 關
+  </div>
+
+  <div class="spell-examples">
+    <h3>每關實際 spell · 教學目標逐關遞進</h3>
+    <div class="spell-list">
+      <div class="spell-item">
+        <div class="lv">L 0</div>
+        <div class="combo"><span class="low">3</span><span class="low">區</span></div>
+        <div class="name">鍵盤導覽</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 1</div>
+        <div class="combo"><span class="low">a</span></div>
+        <div class="name">單字符</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 2</div>
+        <div class="combo"><span class="low">j</span></div>
+        <div class="name">右手</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 3</div>
+        <div class="combo"><span class="low">1</span></div>
+        <div class="name">頂排數字</div>
+      </div>
+
+      <div class="spell-item">
+        <div class="lv">L 4</div>
+        <div class="combo"><span class="low">5</span></div>
+        <div class="name">數字擴展</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 5</div>
+        <div class="combo"><span class="low">a</span><span class="enter">↵</span></div>
+        <div class="name">Enter 確認</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 6</div>
+        <div class="combo"><span class="low">abc</span></div>
+        <div class="name">連續序列</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 7</div>
+        <div class="combo"><span class="low">ajk</span></div>
+        <div class="name">跳躍序列</div>
+      </div>
+
+      <div class="spell-item">
+        <div class="lv">L 8</div>
+        <div class="combo"><span class="low">as</span><span class="low" style="opacity:.4; text-decoration: line-through;">x</span><span class="low">d</span></div>
+        <div class="name">Backspace 修正</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 9</div>
+        <div class="combo"><span class="low">123</span></div>
+        <div class="name">完整數字</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 10</div>
+        <div class="combo"><span class="low">a</span><span class="enter">↵</span><span class="low">b</span><span class="enter">↵</span></div>
+        <div class="name">Enter 重複</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 11</div>
+        <div class="combo"><span class="caps">A</span><span class="caps">S</span><span class="caps">D</span></div>
+        <div class="name">+ Cap Lock</div>
+      </div>
+
+      <div class="spell-item">
+        <div class="lv">L 12</div>
+        <div class="combo"><span class="caps">A</span><span class="low">s</span><span class="caps">D</span></div>
+        <div class="name">大階混合</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 13</div>
+        <div class="combo"><span class="low">as</span><span class="low" style="color:var(--red);">×</span><span class="low">d</span></div>
+        <div class="name">Delete 障礙</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 14</div>
+        <div class="combo"><span class="caps">HELP</span><span class="enter">↵</span></div>
+        <div class="name">單詞</div>
+      </div>
+      <div class="spell-item">
+        <div class="lv">L 15</div>
+        <div class="combo"><span class="caps">DRAGON</span><span class="enter">!</span></div>
+        <div class="name">BOSS · 全技</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Backspace/Delete scenarios ════════════ -->
+  <div class="sec-title">
+    <span class="num">⑥</span>
+    Backspace / Delete 場景
+  </div>
+
+  <div class="scenarios-grid">
+    <div class="scenario">
+      <h4>打錯修正</h4>
+      <div class="scenario-tag">L 8</div>
+      <div class="visual">
+        <div class="typo-enemy">
+          <div class="enemy-mini">asxd</div>
+        </div>
+      </div>
+      <div class="caption">打錯 <span style="color:var(--red); font-family: monospace;">x</span>，敵人不死，浮現 ❌</div>
+      <div class="key-pill bs">⌫ Backspace 修正</div>
+    </div>
+
+    <div class="scenario">
+      <h4>Cap Lock 切換</h4>
+      <div class="scenario-tag">L 11-12</div>
+      <div class="visual">
+        <div class="cap-enemy">
+          <div class="e">A</div>
+          <div class="e">S</div>
+          <div class="e low">d</div>
+          <div class="lock"></div>
+        </div>
+      </div>
+      <div class="caption">大階敵用 <strong style="color:var(--gold);">金光</strong>，小階敵用 <strong style="color:var(--cyan);">紫光</strong></div>
+      <div class="key-pill" style="color:var(--gold); border-color:var(--gold);">⇪ Caps Lock 切換</div>
+    </div>
+
+    <div class="scenario">
+      <h4>刪除障礙</h4>
+      <div class="scenario-tag">L 13</div>
+      <div class="visual">
+        <div class="del-obstacle">
+          <div class="block">✗</div>
+        </div>
+      </div>
+      <div class="caption">路中央出現紅色障礙符文，需清除先繼續</div>
+      <div class="key-pill del">⌦ Delete 清除</div>
+    </div>
+  </div>
+
+  <!-- ════════════ Quick concept summary ════════════ -->
+  <div class="sec-title">
+    <span class="num">⑦</span>
+    核心設計原則 · 學習優先
+  </div>
+
+  <div class="quick-grid">
+    <div class="quick-card">
+      <div class="icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="label">PRINCIPLE</div>
+        <div class="text">先教，後戰</div>
+      </div>
+    </div>
+    <div class="quick-card">
+      <div class="icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+          <path d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <div>
+        <div class="label">PRINCIPLE</div>
+        <div class="text">錯誤 = 學習</div>
+      </div>
+    </div>
+    <div class="quick-card">
+      <div class="icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="label">PRINCIPLE</div>
+        <div class="text">循序漸進 16 級</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Combat v0.4 · 5 學習目標 × 16 關卡 · 鍵盤全能力布導<br/>
+    下一步：confirm 學習路徑 → scaffold Vite + React → Lv0 教學 + Lv1 戰鬥 MVP
+  </div>
+
+</div>
+</body>
+</html>

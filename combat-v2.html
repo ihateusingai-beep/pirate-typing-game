@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>戰鬥畫面 v0.2 — 巫師學徒</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0c0a1f;
+    --bg-card: #1a1733;
+    --bg-card-2: #221d40;
+    --line: #2e2952;
+    --line-soft: #1f1a3d;
+    --ink: #e9e5ff;
+    --ink-mute: #9b97c4;
+    --ink-dim: #6c6890;
+    --primary: #6366f1;
+    --primary-glow: #818cf8;
+    --gold: #fbbf24;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --green: #10b981;
+    --red: #f43f5e;
+    --purple: #a855f7;
+    --enemy-red: #dc2626;
+    --enemy-glow: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--bg-deep);
+    background-image:
+      radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.06) 0%, transparent 40%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 32px 24px 80px;
+    line-height: 1.5;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  /* ── Header ────────────────────────────── */
+  .page-head { text-align: center; margin-bottom: 32px; }
+  .page-head .eyebrow {
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--red); font-weight: 500; margin-bottom: 10px;
+    background: rgba(244, 63, 94, 0.1);
+    display: inline-block; padding: 4px 14px; border-radius: 12px;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+  .page-head h1 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 40px; letter-spacing: -0.01em; margin: 12px 0 8px;
+  }
+  .page-head .subtitle { color: var(--ink-mute); font-size: 15px; }
+
+  /* ── Change summary chips ──────────────────── */
+  .changes {
+    display: flex; gap: 12px; justify-content: center;
+    margin-bottom: 48px; flex-wrap: wrap;
+  }
+  .change-chip {
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--ink);
+  }
+  .change-chip .arrow {
+    color: var(--ink-dim); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .change-chip .new { color: var(--cyan); font-weight: 600; }
+  .change-chip .old { color: var(--ink-dim); text-decoration: line-through; }
+
+  /* ── Section heads ────────────────────────── */
+  .wire-block { margin-bottom: 56px; }
+  .wire-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px dashed var(--line); padding-bottom: 12px; margin-bottom: 20px;
+  }
+  .wire-head h2 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 24px; letter-spacing: -0.01em;
+  }
+  .wire-head .meta { font-size: 12px; color: var(--ink-mute); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── Device frames ────────────────────────── */
+  .device {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.5);
+  }
+  .device.desktop .chrome {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px;
+    background: var(--bg-card-2);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .device.desktop .chrome .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
+  .device.desktop .chrome .url {
+    flex: 1; margin-left: 16px;
+    background: var(--bg-deep); color: var(--ink-mute); font-size: 12px;
+    padding: 4px 12px; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Battle screen v2 ───────────────────── */
+  .battle-screen {
+    aspect-ratio: 16 / 11;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr 220px;
+    gap: 12px;
+    padding: 16px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 70%), var(--bg-deep);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Stars background */
+  .battle-screen::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 50%, transparent),
+      radial-gradient(1px 1px at 35% 60%, rgba(255,255,255,0.5) 50%, transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,0.4) 50%, transparent),
+      radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.5) 50%, transparent),
+      radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.4) 50%, transparent);
+    pointer-events: none;
+  }
+
+  /* HUD */
+  .hud {
+    grid-column: 1 / -1;
+    display: flex; gap: 10px; align-items: center;
+    position: relative; z-index: 2;
+  }
+  .hud-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+  .hud-stat .label { color: var(--ink-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .hud-stat .value { font-weight: 600; font-size: 16px; font-family: 'JetBrains Mono', monospace; }
+  .hud-stat .icon { color: var(--ink-mute); }
+  .hud-stat.hp .value { color: var(--red); }
+  .hud-stat.score .value { color: var(--gold); }
+  .hud-stat.combo .value { color: var(--cyan); }
+  .hud-stat.timer .value { color: var(--pink); }
+  .hud-stat.wave .value { color: var(--purple); }
+  .hud-spacer { flex: 1; }
+  .hud-quit {
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px;
+    color: var(--ink-mute); font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Battle arena */
+  .arena {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Floor shadow where wizard stands */
+  .arena::after {
+    content: ''; position: absolute;
+    bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 180px; height: 16px;
+    background: radial-gradient(ellipse, rgba(168, 85, 247, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Wizard character */
+  .wizard {
+    position: absolute;
+    bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 100px;
+    z-index: 3;
+  }
+  .wizard .body {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 50px; height: 80px;
+    background: linear-gradient(180deg, var(--purple) 0%, var(--primary) 100%);
+    border-radius: 50% 50% 30% 30% / 40% 40% 30% 30%;
+    box-shadow: 0 0 30px -5px var(--purple);
+  }
+  .wizard .head {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--cyan), var(--primary));
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+  }
+  .wizard .staff {
+    position: absolute; bottom: 10px; right: -10px;
+    width: 4px; height: 70px;
+    background: linear-gradient(180deg, var(--gold), #92400e);
+    border-radius: 2px;
+    transform: rotate(15deg);
+    transform-origin: bottom center;
+  }
+  .wizard .staff::after {
+    content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 14px var(--gold);
+  }
+
+  /* Enemies */
+  .enemy {
+    position: absolute;
+    background: var(--bg-deep);
+    border: 2px solid var(--enemy-red);
+    border-radius: 14px;
+    padding: 6px 10px;
+    box-shadow: 0 0 20px -2px var(--enemy-glow);
+    z-index: 4;
+    animation: float 2.5s ease-in-out infinite;
+  }
+  .enemy.target {
+    border-color: var(--cyan);
+    box-shadow: 0 0 24px -2px var(--cyan), inset 0 0 12px -4px rgba(34, 211, 238, 0.3);
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .enemy .rune-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; color: var(--red);
+    line-height: 1; font-weight: normal;
+  }
+  .enemy.target .rune-label {
+    color: var(--cyan);
+    text-shadow: 0 0 12px var(--cyan);
+  }
+  .enemy .hp-bar {
+    width: 60px; height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .enemy .hp-fill {
+    height: 100%;
+    background: var(--red);
+    width: 60%;
+    transition: width 0.3s;
+  }
+  .enemy.target .hp-fill {
+    background: var(--cyan);
+  }
+
+  /* Spell beam */
+  .spell-beam {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .beam-line {
+    stroke: var(--cyan);
+    stroke-width: 3;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px var(--cyan));
+  }
+
+  /* Combo chain indicator (above wizard) */
+  .combo-chain {
+    position: absolute;
+    bottom: 145px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 4px; align-items: center;
+    z-index: 3;
+  }
+  .combo-chain .chain-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--line);
+  }
+  .combo-chain .chain-dot.filled {
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+  }
+
+  /* Damage flash on wizard */
+  .damage-flash {
+    position: absolute; inset: 0;
+    background: rgba(244, 63, 94, 0.25);
+    pointer-events: none;
+    border-radius: 12px;
+    animation: flash 0.3s ease-out;
+  }
+  @keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Wave indicator overlay */
+  .wave-banner {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(12, 10, 31, 0.85);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 8px;
+    z-index: 6;
+  }
+  .wave-banner .pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* Spell instruction (top-right of arena) */
+  .spell-hint {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(12, 10, 31, 0.85);
+    border: 1px dashed var(--gold);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px; color: var(--gold);
+    z-index: 6;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Right sidebar */
+  .right-panel {
+    display: flex; flex-direction: column; gap: 10px;
+    position: relative; z-index: 2;
+  }
+  .panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .panel-card h4 {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--ink-dim);
+    margin-bottom: 8px; font-weight: 500;
+  }
+
+  /* Combo panel */
+  .combo-panel { text-align: center; }
+  .combo-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    line-height: 1;
+    margin: 4px 0;
+  }
+  .combo-tier {
+    font-size: 11px; color: var(--ink-mute);
+    margin-top: 2px;
+  }
+  .combo-tier.active { color: var(--gold); }
+
+  /* Spell power unlock list */
+  .spell-unlocks {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .spell-unlock {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 8px; border-radius: 5px;
+    background: var(--bg-card-2);
+    font-size: 11px;
+    opacity: 0.35;
+  }
+  .spell-unlock.locked { opacity: 0.25; }
+  .spell-unlock .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .spell-unlock.ice .dot { background: var(--cyan); }
+  .spell-unlock.fire .dot { background: var(--red); }
+  .spell-unlock.lightning .dot { background: var(--gold); }
+  .spell-unlock .lv-tag {
+    margin-left: auto;
+    font-size: 10px; color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Recent kills log */
+  .kill-log {
+    font-size: 11px; color: var(--ink-mute);
+    max-height: 80px; overflow: hidden;
+  }
+  .kill-log .row {
+    display: flex; justify-content: space-between;
+    padding: 2px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .kill-log .row .k-char { color: var(--cyan); font-weight: 600; }
+
+  /* Virtual keyboard */
+  .vkeyboard {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    position: relative; z-index: 2;
+  }
+  .kb-row {
+    display: flex; gap: 4px; justify-content: center; margin-bottom: 4px;
+  }
+  .kb-row:last-child { margin-bottom: 0; }
+  .key {
+    width: 38px; height: 38px;
+    background: var(--bg-card-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--ink-mute);
+    position: relative;
+  }
+  .key.target {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.15);
+    box-shadow: 0 0 12px -2px var(--cyan);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .key.correct {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(16, 185, 129, 0.2);
+  }
+  .key.wide { width: 64px; }
+  .key.x-wide { width: 96px; }
+
+  /* ── Comparison strip ────────────────────── */
+  .compare {
+    display: grid; grid-template-columns: 1fr 60px 1fr;
+    gap: 16px; align-items: stretch;
+  }
+  .compare-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .compare-card .label {
+    font-size: 11px; color: var(--ink-dim);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .compare-card.old { opacity: 0.6; }
+  .compare-card.old .label { color: var(--ink-dim); }
+  .compare-card.new { border-color: var(--cyan); }
+  .compare-card.new .label { color: var(--cyan); }
+
+  .compare-mid {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+  }
+  .compare-mid svg { width: 32px; height: 32px; }
+
+  /* Small mockup for compare */
+  .mini-mockup {
+    aspect-ratio: 4 / 3;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Old: 3 horizontal runes */
+  .mini-old {
+    display: flex; justify-content: center; align-items: center;
+    gap: 12px; height: 100%;
+  }
+  .mini-old .rune {
+    width: 36px; height: 36px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-card-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: var(--ink-mute);
+  }
+  .mini-old .rune.active {
+    border-color: var(--cyan); color: var(--cyan);
+  }
+
+  /* New: enemies around wizard */
+  .mini-new {
+    position: relative; height: 100%;
+  }
+  .mini-new .wizard-mini {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 24px; height: 36px;
+    background: var(--purple);
+    border-radius: 12px 12px 6px 6px;
+    box-shadow: 0 0 12px -2px var(--purple);
+  }
+  .mini-new .enemy-mini {
+    position: absolute;
+    background: var(--bg-deep);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px;
+    color: var(--red);
+  }
+  .mini-new .enemy-mini.target {
+    border-color: var(--cyan); color: var(--cyan);
+    box-shadow: 0 0 8px -2px var(--cyan);
+  }
+
+  .compare-desc {
+    font-size: 12px; color: var(--ink-mute);
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+  .compare-desc strong { color: var(--ink); }
+
+  /* ── Design rationale grid ────────────────── */
+  .rationale-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 24px;
+  }
+  .rationale {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .rationale h3 {
+    font-family: 'DM Serif Display', serif;
+    font-weight: normal; font-size: 18px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rationale .axis-tag {
+    font-size: 10px;
+    background: var(--cyan);
+    color: var(--bg-deep);
+    padding: 2px 8px; border-radius: 8px;
+    font-family: 'Outfit', sans-serif; font-weight: 600;
+  }
+  .rationale p { font-size: 13px; color: var(--ink-mute); margin-bottom: 10px; line-height: 1.6; }
+  .rationale .decisions {
+    list-style: none; padding: 0;
+  }
+  .rationale .decisions li {
+    font-size: 12px; color: var(--ink);
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line-soft);
+    display: flex; gap: 8px;
+  }
+  .rationale .decisions li:last-child { border-bottom: 0; }
+  .rationale .decisions li::before {
+    content: '✓'; color: var(--green); font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* ── Mobile variant ───────────────────────────── */
+  .mobile-frame {
+    width: 280px; aspect-ratio: 9 / 19;
+    margin: 0 auto;
+    background: var(--bg-deep);
+    border: 8px solid var(--bg-card-2);
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+  }
+  .mobile-frame .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 18px; background: var(--bg-card-2);
+    border-radius: 0 0 12px 12px; z-index: 10;
+  }
+  .mobile-content {
+    height: 100%; padding: 28px 8px 8px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .mobile-hud {
+    display: flex; gap: 4px; padding: 4px;
+    background: var(--bg-card); border-radius: 6px;
+    font-size: 10px;
+  }
+  .mobile-hud span { padding: 0 4px; }
+  .mobile-arena {
+    flex: 1; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+  .mobile-arena .wiz {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 18px; height: 28px;
+    background: var(--purple); border-radius: 10px 10px 5px 5px;
+  }
+  .mobile-arena .e {
+    position: absolute;
+    background: var(--bg-deep); border: 1.5px solid var(--red);
+    border-radius: 6px;
+    padding: 2px 5px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px; color: var(--red);
+  }
+  .mobile-arena .e.target {
+    border-color: var(--cyan); color: var(--cyan);
+  }
+  .mobile-kb {
+    height: 88px; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px; display: grid; gap: 3px;
+  }
+  .mobile-kb-row { display: flex; gap: 2px; justify-content: center; }
+  .mobile-key {
+    width: 20px; height: 20px;
+    background: var(--bg-card-2); border: 1px solid var(--line);
+    border-radius: 3px; font-size: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+  }
+  .mobile-key.target { border-color: var(--cyan); color: var(--cyan); }
+
+  /* Annotations */
+  .annot-block {
+    margin-top: 16px;
+    background: var(--bg-card);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .annot-block strong { color: var(--gold); font-weight: 500; }
+  .annot-block ul { margin-top: 6px; padding-left: 18px; }
+  .annot-block li { margin-bottom: 4px; }
+
+  .page-foot {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px dashed var(--line);
+    text-align: center; font-size: 12px; color: var(--ink-dim);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-head">
+    <div class="eyebrow">Combat v0.2 · Revision</div>
+    <h1>戰鬥畫面 — 敵人過多</h1>
+    <div class="subtitle">Typing of the Dead 風格 · 敵人從邊緣逼近 · 鍵盤解咒攻擊</div>
+  </div>
+
+  <div class="changes">
+    <div class="change-chip">
+      <span class="old">符文區：3 並排靜態</span>
+      <span class="arrow">→</span>
+      <span class="new">敵人隨身帶符文</span>
+    </div>
+    <div class="change-chip">
+      <span class="old">Combo：3 階常駐</span>
+      <span class="arrow">→</span>
+      <span class="new">Lv6 解鎖 + 擊殺鍊</span>
+    </div>
+    <div class="change-chip">
+      <span class="old">節奏：1 組 3 符文</span>
+      <span class="arrow">→</span>
+      <span class="new">多敵並行 + HP 風險</span>
+    </div>
+  </div>
+
+  <!-- ════════════ New Combat Mockup ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>新戰鬥畫面 · v0.2 Mockup</h2>
+      <div class="meta">Desktop · 16:11</div>
+    </div>
+
+    <div class="device desktop">
+      <div class="chrome">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="url">wizard-apprentice.app/arena/lv5</div>
+      </div>
+      <div class="battle-screen">
+
+        <!-- HUD -->
+        <div class="hud">
+          <div class="hud-stat hp">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <div><div class="label">HP</div><div class="value">85/100</div></div>
+          </div>
+          <div class="hud-stat wave">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h2M22 12h-2M12 2v2M12 22v-2M5 5l1.5 1.5M19 19l-1.5-1.5M5 19l1.5-1.5M19 5l-1.5-1.5"/></svg>
+            <div><div class="label">Wave</div><div class="value">2 / 5</div></div>
+          </div>
+          <div class="hud-stat score">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <div><div class="label">Score</div><div class="value">1,240</div></div>
+          </div>
+          <div class="hud-stat combo">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <div><div class="label">Combo</div><div class="value">×3</div></div>
+          </div>
+          <div class="hud-spacer"></div>
+          <div class="hud-stat timer">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
+            <div><div class="label">倒數</div><div class="value">12.4s</div></div>
+          </div>
+          <div class="hud-quit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            退出
+          </div>
+        </div>
+
+        <!-- Battle arena -->
+        <div class="arena">
+          <!-- Wave indicator -->
+          <div class="wave-banner">
+            <div class="pulse"></div>
+            <span>第 2 波 · 3 敵人</span>
+          </div>
+
+          <!-- Spell hint -->
+          <div class="spell-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+            光之舞咒 · Lv5
+          </div>
+
+          <!-- Combo chain dots above wizard -->
+          <div class="combo-chain">
+            <div class="chain-dot filled"></div>
+            <div class="chain-dot filled"></div>
+            <div class="chain-dot filled"></div>
+            <div class="chain-dot"></div>
+            <div class="chain-dot"></div>
+          </div>
+
+          <!-- Wizard character -->
+          <div class="wizard">
+            <div class="head"></div>
+            <div class="body"></div>
+            <div class="staff"></div>
+          </div>
+
+          <!-- Enemies -->
+          <div class="enemy" style="top: 40px; left: 60px;">
+            <div class="rune-label">F</div>
+            <div class="hp-bar"><div class="hp-fill"></div></div>
+          </div>
+          <div class="enemy target" style="top: 110px; right: 70px;">
+            <div class="rune-label">S</div>
+            <div class="hp-bar"><div class="hp-fill"></div></div>
+          </div>
+          <div class="enemy" style="top: 180px; left: 110px;">
+            <div class="rune-label">D</div>
+            <div class="hp-bar"><div class="hp-fill"></div></div>
+          </div>
+
+          <!-- Spell beam (target enemy → wizard) -->
+          <svg class="spell-beam" style="top: 110px; right: 70px; width: 200px; height: 200px;" viewBox="0 0 200 200">
+            <line class="beam-line" x1="20" y1="40" x2="180" y2="180" />
+          </svg>
+
+          <!-- Damage flash (decorative, showing recent hit) -->
+          <div class="damage-flash"></div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="right-panel">
+          <div class="panel-card combo-panel">
+            <h4>Combo</h4>
+            <div class="combo-big">×3</div>
+            <div class="combo-tier active">冰封術已就緒</div>
+            <div class="combo-tier">×5 火焰術 · ×7 雷電術</div>
+          </div>
+
+          <div class="panel-card">
+            <h4>Spell Power</h4>
+            <div class="spell-unlocks">
+              <div class="spell-unlock ice">
+                <div class="dot"></div>
+                冰封術 (全場冰凍 1 秒)
+                <span class="lv-tag">Q</span>
+              </div>
+              <div class="spell-unlock fire locked">
+                <div class="dot"></div>
+                火焰術 (範圍傷害)
+                <span class="lv-tag">W</span>
+              </div>
+              <div class="spell-unlock lightning locked">
+                <div class="dot"></div>
+                雷電術 (清場)
+                <span class="lv-tag">E</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card" style="flex: 1;">
+            <h4>剛才擊殺</h4>
+            <div class="kill-log">
+              <div class="row"><span class="k-char">A</span><span>×3</span></div>
+              <div class="row"><span class="k-char">S</span><span>×2</span></div>
+              <div class="row"><span class="k-char">D</span><span>×1</span></div>
+              <div class="row"><span class="k-char">F</span><span>×1</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Virtual keyboard (same as v0.1) -->
+        <div class="vkeyboard">
+          <div class="kb-row">
+            <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+            <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+            <div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">0</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide">Q</div><div class="key wide">W</div>
+            <div class="key wide">E</div><div class="key wide">R</div>
+            <div class="key wide">T</div><div class="key wide">Y</div>
+            <div class="key wide">U</div><div class="key wide">I</div>
+            <div class="key wide">O</div><div class="key wide">P</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide">A</div><div class="key wide target">S</div>
+            <div class="key wide">D</div><div class="key wide">F</div>
+            <div class="key wide">G</div><div class="key wide">H</div>
+            <div class="key wide">J</div><div class="key wide">K</div>
+            <div class="key wide">L</div><div class="key wide">;</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide">Z</div><div class="key wide">X</div>
+            <div class="key wide">C</div><div class="key wide">V</div>
+            <div class="key wide">B</div><div class="key wide">N</div>
+            <div class="key wide">M</div>
+            <div class="key x-wide">Enter ↵</div>
+            <div class="key x-wide">Space</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="annot-block">
+      <strong>📍 v0.2 主要改動：</strong>
+      <ul>
+        <li><strong>中央變戰鬥區</strong>：巫師企底部中央，敵人從上下左右四面飛近，每隻敵人有獨立 HP 條</li>
+        <li><strong>符文跟住敵人</strong>：唔再靜態顯示，每隻敵人額頭帶住一個大字符 — 邊個刻畫齊 = 邊個變目標</li>
+        <li><strong>Combo 改成擊殺鍊</strong>：巫師頭頂有 5 粒圓點，每擊殺 1 敵填 1 粒；3 粒齊 = 解鎖冰封術</li>
+        <li><strong>Spell Power 解鎖時機</strong>：Lv1-L5 完全關閉；Lv6 開 Combo Meter；Lv10 解 Q/W/E 範圍攻擊</li>
+        <li><strong>Wave 系統</strong>：每關分 5 波，每波 3–5 敵；BOSS Lv15 為單隻 6 符文巨龍</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════ Before/After comparison ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>對比 · Before vs After</h2>
+      <div class="meta">3 個 axis 各 cut</div>
+    </div>
+
+    <div class="compare">
+      <!-- BEFORE: Rune area -->
+      <div class="compare-card old">
+        <div class="label">v0.1 · 符文區（靜態 3 並排）</div>
+        <div class="mini-mockup">
+          <div class="mini-old">
+            <div class="rune">A</div>
+            <div class="rune active">S</div>
+            <div class="rune">D</div>
+          </div>
+        </div>
+        <div class="compare-desc">
+          <strong>問題</strong>：符文浮喺空中冇威脅感，學生唔覺「要做時要諗下件事」
+        </div>
+      </div>
+      <div class="compare-mid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </div>
+      <!-- AFTER: Rune area -->
+      <div class="compare-card new">
+        <div class="label">v0.2 · 敵人隨身符文</div>
+        <div class="mini-mockup mini-new">
+          <div class="wizard-mini"></div>
+          <div class="enemy-mini" style="top: 14px; left: 14px;">F</div>
+          <div class="enemy-mini target" style="top: 40px; right: 18px;">S</div>
+          <div class="enemy-mini" style="top: 80px; left: 30px;">D</div>
+        </div>
+        <div class="compare-desc">
+          <strong>改進</strong>：敵人 = 移動威脅；每隻敵人有 HP，唔打會行近巫師
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="compare">
+      <!-- BEFORE: Combo -->
+      <div class="compare-card old">
+        <div class="label">v0.1 · Combo Meter 常駐 3 階</div>
+        <div class="mini-mockup" style="display: flex; flex-direction: column; justify-content: center; gap: 6px;">
+          <div style="height: 8px; background: var(--line); border-radius: 4px; overflow: hidden;">
+            <div style="height: 100%; width: 70%; background: linear-gradient(90deg, var(--cyan), var(--purple));"></div>
+          </div>
+          <div style="font-size: 10px; color: var(--ink-mute); display: flex; justify-content: space-between;">
+            <span>×3 冰</span><span>×5 火</span><span>×7 雷</span>
+          </div>
+        </div>
+        <div class="compare-desc">
+          <strong>問題</strong>：初階玩家未掌握基礎就要理解 combo + spell tier，認知過載
+        </div>
+      </div>
+      <div class="compare-mid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </div>
+      <!-- AFTER: Combo -->
+      <div class="compare-card new">
+        <div class="label">v0.2 · 擊殺鍊 (Lv6 解鎖)</div>
+        <div class="mini-mockup" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+          <div style="display: flex; gap: 6px;">
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></div>
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></div>
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></div>
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: var(--line);"></div>
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: var(--line);"></div>
+          </div>
+          <div style="font-size: 11px; color: var(--cyan);">×3 冰封就緒</div>
+        </div>
+        <div class="compare-desc">
+          <strong>改進</strong>：純視覺 chain dot；Lv1-L5 完全關閉 → 認知上限平
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="compare">
+      <!-- BEFORE: Rhythm -->
+      <div class="compare-card old">
+        <div class="label">v0.1 · 1 組 3 符文輪轉</div>
+        <div class="mini-mockup" style="display: flex; flex-direction: column; justify-content: space-around; padding: 16px;">
+          <div style="text-align: center; font-size: 10px; color: var(--ink-mute);">第 1 / 3 輪</div>
+          <div style="display: flex; justify-content: center; gap: 8px;">
+            <div style="width: 28px; height: 28px; border: 2px solid var(--line); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-mute);">A</div>
+            <div style="width: 28px; height: 28px; border: 2px solid var(--cyan); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--cyan);">S</div>
+            <div style="width: 28px; height: 28px; border: 2px solid var(--line); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-mute);">D</div>
+          </div>
+          <div style="text-align: center; font-size: 10px; color: var(--ink-dim);">無敵人 · 無 HP 風險</div>
+        </div>
+        <div class="compare-desc">
+          <strong>問題</strong>：無威脅感，學生可以慢吞吞打；HP 純粹 cosmetic
+        </div>
+      </div>
+      <div class="compare-mid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </div>
+      <!-- AFTER: Rhythm -->
+      <div class="compare-card new">
+        <div class="label">v0.2 · 多敵並行 + Wave</div>
+        <div class="mini-mockup mini-new">
+          <div class="wizard-mini"></div>
+          <div class="enemy-mini" style="top: 8px; left: 8px;">F</div>
+          <div class="enemy-mini" style="top: 8px; right: 8px;">S</div>
+          <div class="enemy-mini" style="top: 60px; left: 50%; transform: translateX(-50%);">A</div>
+          <div style="position: absolute; bottom: 6px; left: 8px; font-size: 9px; color: var(--ink-dim);">Wave 3/5 · 3 敵</div>
+        </div>
+        <div class="compare-desc">
+          <strong>改進</strong>：3 敵同時逼近；唔打 = 撞巫師扣 HP；Lv11+ 加更多
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Design rationale ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>設計理由 · 點解咁改</h2>
+      <div class="meta">3 個 axis 嘅 design rationale</div>
+    </div>
+
+    <div class="rationale-grid">
+
+      <div class="rationale">
+        <h3><span class="axis-tag">符文</span> 隨身化</h3>
+        <p>原方案 3 粒靜態符文太「填字遊戲」感，學生唔會有緊張感。改成敵人隨身帶符文，符號變成目標鎖定嘅對象。</p>
+        <ul class="decisions">
+          <li>每敵人 1 符文，避免初階 overwhelm</li>
+          <li>敵人有 HP 條 (1 hit kill Lv1-L5)</li>
+          <li>目標鎖定 = 距離巫師最近嘅敵</li>
+          <li>擊殺動畫：符文粒子散開 + 巫師吸收光點</li>
+        </ul>
+      </div>
+
+      <div class="rationale">
+        <h3><span class="axis-tag">Combo</span> 漸進解鎖</h3>
+        <p>初階玩家仲未掌握按鍵位置就要兼顧 combo 等級，係典型嘅認知過載。Combo 系統改為「按等級解鎖」而非「常駐」。</p>
+        <ul class="decisions">
+          <li>Lv1-L5：純粹打符文，無 combo meter</li>
+          <li>Lv6：顯示 chain dots 但無 spell power</li>
+          <li>Lv10：解 Q/W/E 鍵施放範圍技能</li>
+          <li>Lv15 BOSS：combo 滿 → 必殺技必發</li>
+        </ul>
+      </div>
+
+      <div class="rationale">
+        <h3><span class="axis-tag">節奏</span> 升溫設計</h3>
+        <p>原方案所有關卡節奏一樣。改成按等級升溫：1 敵 → 2 敵 → 3+ 敵並行；BOSS 關特殊機制。</p>
+        <ul class="decisions">
+          <li>Lv1-L3：1 敵同時，慢速，無計時</li>
+          <li>Lv4-L5：1–2 敵，20s 計時</li>
+          <li>Lv6-L10：2–3 敵，15s，combo 啟用</li>
+          <li>Lv11-L14：3+ 敵，8s，spell power</li>
+          <li>Lv15 BOSS：1 隻 6 符文巨龍，5s</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════ Mobile variant ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>📱 行動版 · Mobile Battle</h2>
+      <div class="meta">iPhone 直立 · 戰鬥區 + 鍵盤</div>
+    </div>
+
+    <div style="display: flex; justify-content: center;">
+      <div class="mobile-frame">
+        <div class="notch"></div>
+        <div class="mobile-content">
+          <div class="mobile-hud">
+            <span style="color: var(--red);">❤️ 85</span>
+            <span style="color: var(--purple);">⚔ W2/5</span>
+            <span style="color: var(--gold);">⭐ 1240</span>
+            <span style="color: var(--cyan); margin-left: auto;">⚡×3</span>
+          </div>
+          <div class="mobile-arena">
+            <div class="wiz"></div>
+            <div class="e" style="top: 8px; left: 8px;">F</div>
+            <div class="e target" style="top: 8px; right: 8px;">S</div>
+            <div class="e" style="top: 60px; left: 50%; transform: translateX(-50%);">A</div>
+          </div>
+          <div class="mobile-kb">
+            <div class="mobile-kb-row">
+              <div class="mobile-key">1</div><div class="mobile-key">2</div>
+              <div class="mobile-key">3</div><div class="mobile-key">4</div>
+              <div class="mobile-key">5</div><div class="mobile-key">6</div>
+              <div class="mobile-key">7</div><div class="mobile-key">8</div>
+              <div class="mobile-key">9</div><div class="mobile-key">0</div>
+            </div>
+            <div class="mobile-kb-row">
+              <div class="mobile-key">Q</div><div class="mobile-key">W</div>
+              <div class="mobile-key">E</div><div class="mobile-key">R</div>
+              <div class="mobile-key">T</div><div class="mobile-key">Y</div>
+              <div class="mobile-key">U</div><div class="mobile-key">I</div>
+              <div class="mobile-key">O</div><div class="mobile-key">P</div>
+            </div>
+            <div class="mobile-kb-row">
+              <div class="mobile-key">A</div>
+              <div class="mobile-key target">S</div>
+              <div class="mobile-key">D</div>
+              <div class="mobile-key">F</div>
+              <div class="mobile-key">G</div>
+              <div class="mobile-key">H</div>
+              <div class="mobile-key">J</div>
+              <div class="mobile-key">K</div>
+              <div class="mobile-key">L</div>
+              <div class="mobile-key">;</div>
+            </div>
+            <div class="mobile-kb-row">
+              <div class="mobile-key" style="width: 30px;">Z</div>
+              <div class="mobile-key">X</div><div class="mobile-key">C</div>
+              <div class="mobile-key">V</div><div class="mobile-key">B</div>
+              <div class="mobile-key">N</div><div class="mobile-key">M</div>
+              <div class="mobile-key" style="width: 36px;">↵</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annot-block" style="margin-top: 24px;">
+      <strong>📱 Mobile 調整：</strong>
+      <ul>
+        <li>戰鬥區壓縮成 40% 屏高，3 敵足夠；4+ 敵要橫向 iPad</li>
+        <li>Combo 數字置 HUD 內，唔再佔獨立 row</li>
+        <li>虛擬鍵盤仍佔下半，但每粒 key 縮細 1px</li>
+        <li>Touch tap = 鍵盤模擬；外接實體鍵盤自動切換全鍵盤模式</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-foot">
+    Combat v0.2 · 巫師學徒 · 3 axes revised (runes / combo / rhythm)<br/>
+    下一步：confirm layout → scaffold Vite + React → Lv1 戰鬥畫面 MVP
+  </div>
+
+</div>
+</body>
+</html>

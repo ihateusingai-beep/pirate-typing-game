@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>巫師學徒 — UI Wireframes</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0c0a1f;
+    --bg-card: #1a1733;
+    --bg-card-2: #221d40;
+    --line: #2e2952;
+    --line-soft: #1f1a3d;
+    --ink: #e9e5ff;
+    --ink-mute: #9b97c4;
+    --ink-dim: #6c6890;
+    --primary: #6366f1;
+    --primary-glow: #818cf8;
+    --gold: #fbbf24;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --green: #10b981;
+    --red: #f43f5e;
+    --purple: #a855f7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--bg-deep);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.06) 0%, transparent 40%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 32px 24px 80px;
+    line-height: 1.5;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  /* ── Header ───────────────────────────────────── */
+  .page-head { text-align: center; margin-bottom: 56px; }
+  .page-head .eyebrow {
+    font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 12px;
+  }
+  .page-head h1 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 44px; letter-spacing: -0.01em; margin-bottom: 12px;
+  }
+  .page-head .subtitle { color: var(--ink-mute); font-size: 16px; }
+
+  /* ── Section heads ────────────────────────────── */
+  .wire-block { margin-bottom: 64px; }
+  .wire-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px dashed var(--line); padding-bottom: 14px; margin-bottom: 24px;
+  }
+  .wire-head h2 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 26px; letter-spacing: -0.01em;
+  }
+  .wire-head .meta { font-size: 13px; color: var(--ink-mute); }
+
+  /* ── Device frames ────────────────────────────── */
+  .device {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Browser/desktop chrome */
+  .device.desktop .chrome {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px;
+    background: var(--bg-card-2);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .device.desktop .chrome .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--line);
+  }
+  .device.desktop .chrome .url {
+    flex: 1; margin-left: 16px;
+    background: var(--bg-deep);
+    color: var(--ink-mute); font-size: 12px;
+    padding: 4px 12px; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Screen 1: Main menu ──────────────────────── */
+  .menu-screen {
+    aspect-ratio: 16 / 10;
+    padding: 32px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 24px;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(99, 102, 241, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 80%, rgba(251, 191, 36, 0.06) 0%, transparent 50%),
+      var(--bg-deep);
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-screen::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, white 50%, transparent),
+      radial-gradient(1px 1px at 60% 15%, white 50%, transparent),
+      radial-gradient(1px 1px at 80% 40%, white 50%, transparent),
+      radial-gradient(1px 1px at 35% 70%, white 50%, transparent),
+      radial-gradient(1px 1px at 75% 75%, white 50%, transparent);
+    opacity: 0.5;
+  }
+  .menu-top { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+  .menu-top .logo {
+    font-family: 'DM Serif Display', serif; font-size: 22px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .menu-top .logo svg { color: var(--gold); }
+  .menu-top .user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-mute); }
+  .menu-top .user .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border: 2px solid var(--gold);
+  }
+
+  .menu-hero {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 40px; align-items: center; position: relative; z-index: 2;
+  }
+  .menu-text h3 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 40px; line-height: 1.15; margin-bottom: 16px;
+  }
+  .menu-text .rank {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    color: var(--gold);
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 13px; font-weight: 500; margin-bottom: 16px;
+  }
+  .menu-text p { color: var(--ink-mute); font-size: 15px; margin-bottom: 24px; max-width: 380px; }
+
+  .btn-row { display: flex; gap: 12px; }
+  .btn-primary {
+    background: var(--primary); color: white;
+    padding: 14px 28px; border-radius: 10px;
+    font-weight: 600; font-size: 15px;
+    display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.6);
+  }
+  .btn-ghost {
+    background: transparent; color: var(--ink);
+    padding: 14px 24px; border-radius: 10px;
+    font-weight: 500; font-size: 15px;
+    border: 1px solid var(--line);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+
+  .wizard-art {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wizard-art .silhouette {
+    width: 180px; height: 220px;
+    background: linear-gradient(180deg, var(--purple) 0%, var(--primary) 100%);
+    border-radius: 60% 60% 30% 30% / 50% 50% 30% 30%;
+    position: relative;
+    box-shadow: 0 0 60px -10px var(--purple);
+    opacity: 0.85;
+  }
+  .wizard-art .staff {
+    position: absolute; bottom: 0; right: 20%;
+    width: 6px; height: 140px;
+    background: linear-gradient(180deg, var(--gold), #b45309);
+    border-radius: 3px;
+    transform: rotate(15deg);
+  }
+  .wizard-art .staff::after {
+    content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 20px var(--gold);
+  }
+
+  .menu-bottom { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+  .progress-pill {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card-2); border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 10px; font-size: 13px; color: var(--ink-mute);
+  }
+  .progress-pill .bar { width: 100px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .progress-pill .fill { width: 35%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--cyan)); }
+
+  /* Annotation arrows */
+  .annot {
+    position: absolute;
+    font-size: 11px; color: var(--gold);
+    background: rgba(12, 10, 31, 0.9);
+    border: 1px dashed var(--gold);
+    padding: 4px 8px; border-radius: 6px;
+    pointer-events: none; white-space: nowrap;
+  }
+  .annot::after {
+    content: ''; position: absolute;
+    border: 4px solid transparent;
+  }
+  .annot.top::after { bottom: -8px; left: 50%; transform: translateX(-50%); border-top-color: var(--gold); }
+  .annot.bot::after { top: -8px; left: 50%; transform: translateX(-50%); border-bottom-color: var(--gold); }
+
+  /* ── Screen 2: Battle / Spell casting ─────────── */
+  .battle-screen {
+    aspect-ratio: 16 / 11;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr 240px;
+    gap: 12px;
+    padding: 16px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 70%), var(--bg-deep);
+  }
+
+  /* HUD bar (top row spans both cols) */
+  .hud {
+    grid-column: 1 / -1;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .hud-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+  .hud-stat .label { color: var(--ink-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .hud-stat .value { font-weight: 600; font-size: 16px; font-family: 'JetBrains Mono', monospace; }
+  .hud-stat .icon { color: var(--ink-mute); }
+  .hud-stat.hp .value { color: var(--red); }
+  .hud-stat.score .value { color: var(--gold); }
+  .hud-stat.combo .value { color: var(--cyan); }
+  .hud-stat.timer .value { color: var(--pink); }
+  .hud-spacer { flex: 1; }
+  .hud-quit {
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px;
+    color: var(--ink-mute); font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Rune arena (center-left) */
+  .rune-arena {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rune-arena::before {
+    content: ''; position: absolute; inset: 50% 50%;
+    width: 220px; height: 220px; transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px dashed rgba(168, 85, 247, 0.3);
+    pointer-events: none;
+  }
+  .spell-label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px;
+  }
+  .spell-label .name { color: var(--gold); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .spell-label .hint { color: var(--ink-dim); font-size: 12px; }
+
+  .rune-row {
+    display: flex; justify-content: center; align-items: center;
+    gap: 24px; z-index: 2;
+  }
+  .rune {
+    width: 72px; height: 72px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg-card-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px; color: var(--ink-mute);
+    position: relative;
+  }
+  .rune.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 20px -4px var(--cyan), inset 0 0 12px -4px rgba(34, 211, 238, 0.3);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .rune.done {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(16, 185, 129, 0.1);
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .rune .ord {
+    position: absolute; top: 4px; left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-dim);
+  }
+
+  .spell-desc {
+    text-align: center; font-size: 12px; color: var(--ink-mute);
+    background: var(--bg-card-2); border-radius: 8px; padding: 8px;
+  }
+
+  /* Right panel: combo + power */
+  .right-panel {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .panel-card h4 {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--ink-dim);
+    margin-bottom: 8px; font-weight: 500;
+  }
+
+  /* Combo meter */
+  .combo-meter {
+    height: 8px; background: var(--line); border-radius: 4px;
+    overflow: hidden; position: relative;
+  }
+  .combo-meter .fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--cyan) 0%, var(--purple) 60%, var(--pink) 100%);
+    transition: width 0.3s;
+  }
+  .combo-meter::after {
+    content: ''; position: absolute; top: -2px; bottom: -2px;
+    width: 1px; background: rgba(255, 255, 255, 0.3);
+  }
+  .combo-tiers {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--ink-dim);
+    margin-top: 6px; font-family: 'JetBrains Mono', monospace;
+  }
+  .combo-tiers .tier-active { color: var(--cyan); font-weight: 600; }
+
+  /* Spell power cards */
+  .spell-powers { display: flex; flex-direction: column; gap: 6px; }
+  .spell-power {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 6px;
+    background: var(--bg-card-2);
+    font-size: 12px;
+    opacity: 0.4;
+  }
+  .spell-power.ready { opacity: 1; }
+  .spell-power.charging { opacity: 0.7; }
+  .spell-power .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .spell-power.ice .dot { background: var(--cyan); }
+  .spell-power.fire .dot { background: var(--red); }
+  .spell-power.lightning .dot { background: var(--gold); }
+  .spell-power .key {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    padding: 1px 5px; border-radius: 3px;
+    color: var(--ink-mute);
+  }
+
+  /* Virtual keyboard (bottom spans both cols) */
+  .vkeyboard {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .kb-row {
+    display: flex; gap: 4px; justify-content: center; margin-bottom: 4px;
+  }
+  .kb-row:last-child { margin-bottom: 0; }
+  .key {
+    width: 38px; height: 38px;
+    background: var(--bg-card-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--ink-mute);
+    position: relative;
+  }
+  .key.target {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    box-shadow: 0 0 12px -2px var(--cyan);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .key.correct {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(16, 185, 129, 0.2);
+  }
+  .key.wrong {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(244, 63, 94, 0.2);
+  }
+  .key.wide { width: 64px; }
+  .key.x-wide { width: 96px; }
+
+  /* ── Screen 3: Spell book ─────────────────────── */
+  .book-screen {
+    aspect-ratio: 16 / 11;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
+    padding: 24px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(251, 191, 36, 0.06) 0%, transparent 40%), var(--bg-deep);
+  }
+  .book-top { display: flex; justify-content: space-between; align-items: end; }
+  .book-top h3 {
+    font-family: 'DM Serif Display', serif; font-weight: normal;
+    font-size: 28px;
+  }
+  .book-stats {
+    display: flex; gap: 16px;
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 16px;
+    font-size: 13px;
+  }
+  .book-stats .stat { display: flex; flex-direction: column; align-items: center; }
+  .book-stats .stat .num { font-weight: 700; font-size: 18px; color: var(--gold); }
+  .book-stats .stat .lbl { color: var(--ink-dim); font-size: 11px; }
+
+  .filter-row { display: flex; gap: 8px; margin: 12px 0; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 16px; font-size: 13px;
+    background: var(--bg-card); border: 1px solid var(--line);
+    color: var(--ink-mute);
+  }
+  .filter-btn.active {
+    background: var(--primary); color: white;
+    border-color: var(--primary);
+  }
+
+  .spell-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    overflow: hidden;
+  }
+  .spell-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 8px;
+    aspect-ratio: 3 / 4;
+    position: relative;
+    overflow: hidden;
+  }
+  .spell-card.locked { opacity: 0.45; }
+  .spell-card.featured {
+    border-color: var(--gold);
+    box-shadow: 0 0 16px -4px rgba(251, 191, 36, 0.3);
+  }
+  .spell-card .lv-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--bg-deep); border: 1px solid var(--line);
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 10px; color: var(--ink-mute);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .spell-card .rune-display {
+    display: flex; justify-content: center; gap: 4px; margin: 8px 0;
+  }
+  .spell-card .rune-chip {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--bg-card-2); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--cyan);
+  }
+  .spell-card.locked .rune-chip { color: var(--ink-dim); }
+  .spell-card .spell-name {
+    font-size: 14px; font-weight: 600; text-align: center;
+  }
+  .spell-card .spell-desc {
+    font-size: 11px; color: var(--ink-mute); text-align: center;
+    flex: 1;
+  }
+  .spell-card .stars {
+    display: flex; justify-content: center; gap: 2px;
+  }
+  .spell-card .star svg { width: 12px; height: 12px; }
+  .spell-card .star.filled svg { color: var(--gold); fill: var(--gold); }
+  .spell-card .star.empty svg { color: var(--ink-dim); }
+
+  /* ── Annotations column ───────────────────────── */
+  .annot-block {
+    margin-top: 18px;
+    background: var(--bg-card);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .annot-block strong { color: var(--gold); font-weight: 500; }
+  .annot-block ul { margin-top: 6px; padding-left: 18px; }
+  .annot-block li { margin-bottom: 4px; }
+
+  /* ── Mobile variant ───────────────────────────── */
+  .mobile-pair {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 32px;
+  }
+  .mobile-frame {
+    width: 280px; aspect-ratio: 9 / 19;
+    margin: 0 auto;
+    background: var(--bg-deep);
+    border: 8px solid var(--bg-card-2);
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+  }
+  .mobile-frame .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 18px; background: var(--bg-card-2);
+    border-radius: 0 0 12px 12px; z-index: 10;
+  }
+  .mobile-content {
+    height: 100%; padding: 28px 16px 16px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .mobile-bar {
+    height: 32px; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 6px;
+    display: flex; align-items: center; padding: 0 10px;
+    font-size: 11px; color: var(--ink-mute); gap: 8px;
+  }
+  .mobile-rune-area {
+    flex: 1; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    padding: 12px;
+  }
+  .mobile-runes { display: flex; gap: 12px; }
+  .mobile-rune {
+    width: 44px; height: 44px;
+    border: 2px solid var(--line); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: var(--ink-mute);
+    background: var(--bg-card-2);
+  }
+  .mobile-rune.target { border-color: var(--cyan); color: var(--cyan); }
+  .mobile-rune.done { border-color: var(--green); color: var(--green); }
+  .mobile-kb-mini {
+    height: 100px; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px; display: grid; gap: 4px;
+  }
+  .mobile-kb-row { display: flex; gap: 3px; justify-content: center; }
+  .mobile-key {
+    width: 22px; height: 22px;
+    background: var(--bg-card-2); border: 1px solid var(--line);
+    border-radius: 4px; font-size: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-mute);
+  }
+  .mobile-key.target { border-color: var(--cyan); color: var(--cyan); }
+  .mobile-label { font-size: 11px; color: var(--ink-mute); text-align: center; }
+
+  /* Footer note */
+  .page-foot {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px dashed var(--line);
+    text-align: center; font-size: 13px; color: var(--ink-dim);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-head">
+    <div class="eyebrow">UI Wireframes · v0.1</div>
+    <h1>巫師學徒：魔法字鍵盤</h1>
+    <div class="subtitle">三個核心畫面 · 桌面 + 行動版 · 給 primary 學生嘅鍵盤學習遊戲</div>
+  </div>
+
+  <!-- ════════════ Screen 1: Main menu ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>① 主畫面 · Main Menu</h2>
+      <div class="meta">Desktop · 16:10 · 進入點</div>
+    </div>
+
+    <div class="device desktop">
+      <div class="chrome">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="url">wizard-apprentice.app</div>
+      </div>
+      <div class="menu-screen">
+        <div class="menu-top">
+          <div class="logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8L19 13"/><path d="M15 9h0"/><path d="M17.8 6.2L19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2L11 5"/></svg>
+            巫師學徒
+          </div>
+          <div class="user">
+            <div class="avatar"></div>
+            <span>冒險者 Ken</span>
+          </div>
+        </div>
+
+        <div class="menu-hero">
+          <div class="menu-text">
+            <div class="rank">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+              巫師等級 · 學徒 LV1
+            </div>
+            <h3>準備好施<br/>下一個咒語了嗎？</h3>
+            <p>透過施咒練習鍵盤，由單字符開始，逐步解鎖 15 級咒語書。</p>
+            <div class="btn-row">
+              <div class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                開始歷險
+              </div>
+              <div class="btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                選擇關卡
+              </div>
+              <div class="btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                咒語書
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-art">
+            <div class="silhouette"></div>
+            <div class="staff"></div>
+          </div>
+        </div>
+
+        <div class="menu-bottom">
+          <div class="progress-pill">
+            <span>關卡進度</span>
+            <div class="bar"><div class="fill"></div></div>
+            <span style="color: var(--ink); font-weight: 600;">5 / 15</span>
+          </div>
+          <div class="progress-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            連續學習 7 日
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annot-block">
+      <strong>📍 Key interactions：</strong>
+      <ul>
+        <li><strong>「開始歷險」</strong>— 跳到下一個未完成關卡 (Lv5 → Lv6)</li>
+        <li><strong>「選擇關卡」</strong>— Grid view 揀任何已解鎖關卡（lock icon 顯示未過關）</li>
+        <li><strong>「咒語書」</strong>— 收集回顧所有學過嘅咒語卡 (見 Screen 3)</li>
+        <li>右上角 <strong>avatar</strong> 顯示用戶，點擊展開 settings / 切換用戶</li>
+        <li>底部 <strong>progress bar</strong> 顯示總關卡進度，點擊展開 L1-L15 完整地圖</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════ Screen 2: Battle / Spell casting ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>② 戰鬥畫面 · Spell Casting Arena</h2>
+      <div class="meta">Desktop · 核心遊玩畫面</div>
+    </div>
+
+    <div class="device desktop">
+      <div class="chrome">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="url">wizard-apprentice.app/arena/lv5</div>
+      </div>
+      <div class="battle-screen">
+
+        <!-- HUD -->
+        <div class="hud">
+          <div class="hud-stat hp">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <div><div class="label">HP</div><div class="value">85</div></div>
+          </div>
+          <div class="hud-stat score">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <div><div class="label">Score</div><div class="value">1,240</div></div>
+          </div>
+          <div class="hud-stat combo">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <div><div class="label">Combo</div><div class="value">×7</div></div>
+          </div>
+          <div class="hud-spacer"></div>
+          <div class="hud-stat timer">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
+            <div><div class="label">剩餘時間</div><div class="value">12.4s</div></div>
+          </div>
+          <div class="hud-quit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            退出
+          </div>
+        </div>
+
+        <!-- Rune arena (center) -->
+        <div class="rune-arena">
+          <div class="spell-label">
+            <div class="name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+              光之舞咒 · LV5
+            </div>
+            <div class="hint">第 2 / 3 輪</div>
+          </div>
+
+          <div class="rune-row">
+            <div class="rune done">
+              <span class="ord">1</span>A
+            </div>
+            <div class="rune active">
+              <span class="ord">2</span>S
+            </div>
+            <div class="rune">
+              <span class="ord">3</span>D
+            </div>
+          </div>
+
+          <div class="spell-desc">點擊對應字符啟動符文 · 3 粒齊全 = 咒語完成</div>
+
+          <!-- Annotation overlay (positioned absolute on the device) -->
+          <div style="position: absolute; top: 8px; right: 12px; font-size: 10px; color: var(--gold); background: rgba(12,10,31,0.9); border: 1px dashed var(--gold); padding: 3px 8px; border-radius: 4px;">
+            ↑ 當前目標 → 高亮
+          </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="right-panel">
+          <div class="panel-card">
+            <h4>Combo Meter</h4>
+            <div class="combo-meter">
+              <div class="fill" style="width: 70%;"></div>
+            </div>
+            <div class="combo-tiers">
+              <span class="tier-active">×3 冰封</span>
+              <span class="tier-active">×5 火焰</span>
+              <span>×7 雷電</span>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h4>Spell Power</h4>
+            <div class="spell-powers">
+              <div class="spell-power ice ready">
+                <div class="dot"></div>
+                冰封術
+                <span class="key">Q</span>
+              </div>
+              <div class="spell-power fire ready">
+                <div class="dot"></div>
+                火焰術
+                <span class="key">W</span>
+              </div>
+              <div class="spell-power lightning charging">
+                <div class="dot"></div>
+                雷電術
+                <span class="key">E</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card" style="flex: 1;">
+            <h4>本關咒語</h4>
+            <div style="font-size: 12px; color: var(--ink-mute); line-height: 1.6;">
+              連續打出 <strong style="color: var(--cyan);">A S D F</strong> 序列 5 次，召喚「光之舞」驅散黑暗。
+            </div>
+          </div>
+        </div>
+
+        <!-- Virtual keyboard -->
+        <div class="vkeyboard">
+          <div class="kb-row">
+            <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+            <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+            <div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">0</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide correct">A</div><div class="key wide target">S</div>
+            <div class="key wide">D</div><div class="key wide">F</div>
+            <div class="key wide">G</div><div class="key wide">H</div>
+            <div class="key wide">J</div><div class="key wide">K</div><div class="key wide">L</div>
+            <div class="key wide">;</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide">Q</div><div class="key wide">W</div>
+            <div class="key wide">E</div><div class="key wide">R</div>
+            <div class="key wide">T</div><div class="key wide">Y</div>
+            <div class="key wide">U</div><div class="key wide">I</div>
+            <div class="key wide">O</div><div class="key wide">P</div>
+          </div>
+          <div class="kb-row">
+            <div class="key wide">Z</div><div class="key wide">X</div>
+            <div class="key wide">C</div><div class="key wide">V</div>
+            <div class="key wide">B</div><div class="key wide">N</div>
+            <div class="key wide">M</div>
+            <div class="key x-wide">Enter ↵</div>
+            <div class="key x-wide">Space</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="annot-block">
+      <strong>📍 Key interactions：</strong>
+      <ul>
+        <li><strong>中央符文區</strong> — 每關顯示 1–3 粒符文，要按順序打齊。完成 1 咒 → 法陣爆炸 → 下一咒</li>
+        <li><strong>右側 Combo Meter</strong> — 連擊愈多，解鎖更強嘅 Spell Power (Q/W/E 鍵釋放範圍攻擊)</li>
+        <li><strong>底部虛擬鍵盤</strong> — 學生打邊粒鍵，邊粒 <span style="color: var(--cyan);">亮青</span>；打對 <span style="color: var(--green);">亮綠</span>；打錯 <span style="color: var(--red);">亮紅</span> 0.3 秒</li>
+        <li><strong>倒數計時</strong> — Lv6+ 開始有時間限制，最後 3 秒心跳紅色 + 音效警告</li>
+        <li><strong>HP / Score / Combo</strong> — 錯誤 3 次扣 1 HP；Combo 中斷會 reset Combo Meter</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════ Screen 3: Spell book ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>③ 咒語書 · Spell Book</h2>
+      <div class="meta">Desktop · 收藏 + 複習</div>
+    </div>
+
+    <div class="device desktop">
+      <div class="chrome">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="url">wizard-apprentice.app/spellbook</div>
+      </div>
+      <div class="book-screen">
+        <div>
+          <div class="book-top">
+            <h3>我的咒語書</h3>
+            <div class="book-stats">
+              <div class="stat"><span class="num">5</span><span class="lbl">已學咒語</span></div>
+              <div class="stat"><span class="num">127</span><span class="lbl">施展次數</span></div>
+              <div class="stat"><span class="num">×23</span><span class="lbl">最長連擊</span></div>
+              <div class="stat"><span class="num">7 日</span><span class="lbl">連續登入</span></div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <div class="filter-btn active">全部 (5)</div>
+            <div class="filter-btn">初階 (3)</div>
+            <div class="filter-btn">中階 (2)</div>
+            <div class="filter-btn">高階 (0)</div>
+            <div class="filter-btn" style="margin-left: auto;">🔒 未解鎖 10</div>
+          </div>
+
+          <div class="spell-grid">
+            <!-- Card 1: Featured -->
+            <div class="spell-card featured">
+              <div class="lv-badge">Lv 1</div>
+              <div style="text-align: center; padding-top: 6px;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5"><path d="M12 2L9 9l-7 1.5 4.5 4.5L5 22l7-4 7 4-1.5-7L22 10.5 15 9z"/></svg>
+              </div>
+              <div class="rune-display">
+                <div class="rune-chip">A</div>
+                <div class="rune-chip">S</div>
+                <div class="rune-chip">D</div>
+              </div>
+              <div class="spell-name">光之舞咒</div>
+              <div class="spell-desc">點亮 3 盞魔法燈</div>
+              <div class="stars">
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="spell-card">
+              <div class="lv-badge">Lv 2</div>
+              <div style="text-align: center; padding-top: 6px;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+              </div>
+              <div class="rune-display">
+                <div class="rune-chip">J</div>
+                <div class="rune-chip">K</div>
+                <div class="rune-chip">L</div>
+              </div>
+              <div class="spell-name">鏡像術</div>
+              <div class="spell-desc">召喚鏡中分身</div>
+              <div class="stars">
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="spell-card">
+              <div class="lv-badge">Lv 3</div>
+              <div style="text-align: center; padding-top: 6px;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
+              </div>
+              <div class="rune-display">
+                <div class="rune-chip">1</div>
+                <div class="rune-chip">2</div>
+                <div class="rune-chip">3</div>
+              </div>
+              <div class="spell-name">數字召喚</div>
+              <div class="spell-desc">召喚 3 隻小妖精</div>
+              <div class="stars">
+                <div class="star filled"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Card 4: Locked -->
+            <div class="spell-card locked">
+              <div class="lv-badge">Lv 6</div>
+              <div style="text-align: center; padding-top: 6px; opacity: 0.5;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--ink-dim)" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="rune-display">
+                <div class="rune-chip">?</div>
+                <div class="rune-chip">?</div>
+                <div class="rune-chip">?</div>
+              </div>
+              <div class="spell-name" style="color: var(--ink-dim);">???</div>
+              <div class="spell-desc">通過 Lv5 解鎖</div>
+              <div class="stars">
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="star empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annot-block">
+      <strong>📍 Key interactions：</strong>
+      <ul>
+        <li>每張卡顯示 <strong>咒語名 / 字符組合 / 簡述 / ⭐ 熟練度</strong>（0–3 星取決於過關表現）</li>
+        <li><strong>Featured 邊框</strong> — 最近一次過嘅關卡</li>
+        <li><strong>🔒 Locked 卡</strong> — 顯示解鎖條件（"通過 Lv5"），唔顯示字符組合以免洩題</li>
+        <li>點擊已解鎖卡 → <strong>複習模式</strong>：重新打一次咒語，無限時間無 HP 扣</li>
+        <li>頂部 stats bar：總咒語數 / 施展次數 / 最長連擊 / 連續登入日數（gamification）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════ Mobile variant ════════════ -->
+  <div class="wire-block">
+    <div class="wire-head">
+      <h2>📱 行動版 · Mobile Arena (戰鬥畫面)</h2>
+      <div class="meta">iPhone 14 Pro · 9:19 · 觸控 + 鍵盤混合</div>
+    </div>
+
+    <div class="mobile-pair">
+      <div>
+        <div class="mobile-frame">
+          <div class="notch"></div>
+          <div class="mobile-content">
+            <div class="mobile-bar">
+              <span>❤️ 85</span>
+              <span style="margin-left: auto;">⭐ 1,240</span>
+            </div>
+            <div class="mobile-bar">
+              <span style="color: var(--cyan);">⚡ ×7</span>
+              <span style="margin-left: auto; color: var(--pink);">⏱ 12.4s</span>
+            </div>
+            <div class="mobile-rune-area">
+              <div class="mobile-label">光之舞咒 · Lv5 · 第 2/3 輪</div>
+              <div class="mobile-runes">
+                <div class="mobile-rune done">A</div>
+                <div class="mobile-rune target">S</div>
+                <div class="mobile-rune">D</div>
+              </div>
+              <div class="mobile-label" style="margin-top: 8px;">↑ 點擊下方虛擬鍵盤或實體鍵</div>
+            </div>
+            <div class="mobile-kb-mini">
+              <div class="mobile-kb-row">
+                <div class="mobile-key">1</div><div class="mobile-key">2</div><div class="mobile-key">3</div>
+                <div class="mobile-key">4</div><div class="mobile-key">5</div>
+                <div class="mobile-key">6</div><div class="mobile-key">7</div><div class="mobile-key">8</div>
+                <div class="mobile-key">9</div><div class="mobile-key">0</div>
+              </div>
+              <div class="mobile-kb-row">
+                <div class="mobile-key">Q</div><div class="mobile-key">W</div>
+                <div class="mobile-key">E</div><div class="mobile-key">R</div>
+                <div class="mobile-key">T</div><div class="mobile-key">Y</div>
+                <div class="mobile-key">U</div><div class="mobile-key">I</div>
+                <div class="mobile-key">O</div><div class="mobile-key">P</div>
+              </div>
+              <div class="mobile-kb-row">
+                <div class="mobile-key">A</div><div class="mobile-key target">S</div>
+                <div class="mobile-key">D</div><div class="mobile-key">F</div>
+                <div class="mobile-key">G</div><div class="mobile-key">H</div>
+                <div class="mobile-key">J</div><div class="mobile-key">K</div>
+                <div class="mobile-key">L</div><div class="mobile-key">;</div>
+              </div>
+              <div class="mobile-kb-row">
+                <div class="mobile-key" style="width: 32px;">Z</div>
+                <div class="mobile-key">X</div><div class="mobile-key">C</div>
+                <div class="mobile-key">V</div><div class="mobile-key">B</div>
+                <div class="mobile-key">N</div><div class="mobile-key">M</div>
+                <div class="mobile-key" style="width: 38px;">↵</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="annot-block" style="text-align: center;">
+          <strong>📱 Mobile-first 設計</strong><br/>
+          符文區置中 + 鍵盤下半屏<br/>
+          iPad 可橫向用全鍵盤<br/>
+        </div>
+      </div>
+
+      <div>
+        <div class="mobile-frame">
+          <div class="notch"></div>
+          <div class="mobile-content">
+            <div style="font-family: 'DM Serif Display', serif; font-size: 22px; text-align: center; padding: 12px 0;">我的咒語書</div>
+            <div class="mobile-bar" style="justify-content: space-around;">
+              <span>咒語 <strong style="color: var(--gold);">5</strong></span>
+              <span>次數 <strong style="color: var(--gold);">127</strong></span>
+              <span>Combo <strong style="color: var(--gold);">×23</strong></span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; overflow: hidden;">
+              <div class="spell-card" style="aspect-ratio: auto;">
+                <div class="rune-display">
+                  <div class="rune-chip">A</div><div class="rune-chip">S</div><div class="rune-chip">D</div>
+                </div>
+                <div class="spell-name" style="font-size: 12px;">光之舞咒</div>
+              </div>
+              <div class="spell-card" style="aspect-ratio: auto;">
+                <div class="rune-display">
+                  <div class="rune-chip">J</div><div class="rune-chip">K</div><div class="rune-chip">L</div>
+                </div>
+                <div class="spell-name" style="font-size: 12px;">鏡像術</div>
+              </div>
+              <div class="spell-card" style="aspect-ratio: auto;">
+                <div class="rune-display">
+                  <div class="rune-chip">1</div><div class="rune-chip">2</div><div class="rune-chip">3</div>
+                </div>
+                <div class="spell-name" style="font-size: 12px;">數字召喚</div>
+              </div>
+              <div class="spell-card locked" style="aspect-ratio: auto;">
+                <div class="rune-display">
+                  <div class="rune-chip">?</div><div class="rune-chip">?</div><div class="rune-chip">?</div>
+                </div>
+                <div class="spell-name" style="font-size: 12px;">???</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="annot-block" style="text-align: center;">
+          <strong>📚 咒語書 mobile 版</strong><br/>
+          2-column grid<br/>
+          Tap card → 全屏複習<br/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-foot">
+    Wireframe v0.1 · 巫師學徒：魔法字鍵盤 · 3 個核心畫面 + 2 個 mobile 變奏<br/>
+    下一步：確認 layout → scaffold Vite + React → L1 戰鬥畫面 MVP
+  </div>
+
+</div>
+</body>
+</html>
