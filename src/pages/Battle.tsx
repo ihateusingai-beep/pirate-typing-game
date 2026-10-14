@@ -40,7 +40,9 @@ export function Battle({ levelId, onExit }: BattleProps) {
   const [mistakes, setMistakes] = useState(0);
   const [waveComplete, setWaveComplete] = useState(false);
   const [castFlash, setCastFlash] = useState(false);
-  const lastHandledRef = useRef<string>('');
+  /** Track pending timeouts so we can cancel them on unmount (prevents
+   *  "state update on unmounted component" warnings). */
+  const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   const currentSpell: Spell | undefined = level.spells[spellIdx];
   const currentTarget: KeyToken | null = currentSpell?.tokens[tokenIdx] ?? null;
@@ -54,10 +56,27 @@ export function Battle({ levelId, onExit }: BattleProps) {
     setTokenIdx(0);
     setMistakes(0);
     setWaveComplete(false);
-    lastHandledRef.current = '';
     spawnWave(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelId]);
+
+  // Cancel pending timeouts on unmount
+  useEffect(() => {
+    const timeouts = timeoutsRef.current;
+    return () => {
+      timeouts.forEach((t) => clearTimeout(t));
+      timeouts.clear();
+    };
+  }, []);
+
+  /** Helper to schedule a timeout that's auto-cancelled on unmount */
+  const scheduleTimeout = useCallback((fn: () => void, ms: number): void => {
+    const id = setTimeout(() => {
+      timeoutsRef.current.delete(id);
+      fn();
+    }, ms);
+    timeoutsRef.current.add(id);
+  }, []);
 
   // ------------------------------------------------------------------
   // Multi-enemy wave spawner
@@ -121,7 +140,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
   const handleSpellComplete = useCallback(() => {
     setEnemies([]);
     setWaveComplete(true);
-    setTimeout(() => {
+    scheduleTimeout(() => {
       const next = spellIdx + 1;
       if (next >= level.spells.length) {
         const stars = calculateStars(mistakes + 1, level.spells.length);
@@ -134,7 +153,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
         spawnWave(next);
       }
     }, 600);
-  }, [spellIdx, level.spells.length, mistakes, game, onExit, spawnWave]);
+  }, [spellIdx, level.spells.length, mistakes, game, onExit, spawnWave, scheduleTimeout]);
 
   // ------------------------------------------------------------------
   // Key handler
@@ -213,7 +232,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
 
     // Correct press — visual flash
     setCastFlash(true);
-    setTimeout(() => setCastFlash(false), 200);
+    scheduleTimeout(() => setCastFlash(false), 200);
 
     // Correct press — advance
     game.addScore(10);
@@ -225,7 +244,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
     } else {
       setTokenIdx((i) => i + 1);
     }
-  }, [game, currentTarget, currentSpell, tokenIdx, level, waveComplete, handleSpellComplete]);
+  }, [game, currentTarget, currentSpell, tokenIdx, level, waveComplete, handleSpellComplete, scheduleTimeout]);
 
   useKeyboard({
     enabled: game.gameStatus === 'playing' && !waveComplete,
