@@ -46,13 +46,15 @@ export function recordStars(
   stars: 0 | 1 | 2 | 3
 ): Progress {
   const existing = progress.starsByLevel[levelId] ?? 0;
+  // Cap at 15 (Lv15 = max) so the value doesn't overflow past the last level
+  const MAX_LEVEL = 15;
   const next: Progress = {
     ...progress,
     starsByLevel: {
       ...progress.starsByLevel,
       [levelId]: Math.max(existing, stars) as 0 | 1 | 2 | 3,
     },
-    highestLevelUnlocked: Math.max(progress.highestLevelUnlocked, levelId + 1),
+    highestLevelUnlocked: Math.min(MAX_LEVEL, Math.max(progress.highestLevelUnlocked, levelId + 1)),
     totalSpellsCast: progress.totalSpellsCast + 1,
   };
   saveProgress(next);

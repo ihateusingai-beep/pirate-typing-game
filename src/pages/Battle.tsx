@@ -112,6 +112,12 @@ export function Battle({ levelId, onExit }: BattleProps) {
   // ------------------------------------------------------------------
   // Timer countdown (for L4+ with timeLimit > 0)
   // ------------------------------------------------------------------
+  // NOTE: We deliberately read game.gameStatus ONCE per effect run and
+  // don't include `game` (the full context value) in deps — otherwise
+  // every state change (combo, score, hp, ...) would re-run this effect
+  // and RESET the timer. The setInterval captures game via closure at
+  // effect-run time, and since setTimer/setStatus/onExit are stable refs
+  // (useCallback([]) or component props), this is safe.
   useEffect(() => {
     if (level.timeLimit <= 0) return;
     if (game.gameStatus !== 'playing' || waveComplete) return;
@@ -132,7 +138,8 @@ export function Battle({ levelId, onExit }: BattleProps) {
     }, 100);
 
     return () => clearInterval(interval);
-  }, [spellIdx, levelId, level.timeLimit, waveComplete, game, onExit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spellIdx, levelId, level.timeLimit, waveComplete]);
 
   // ------------------------------------------------------------------
   // Spell complete handler — shared by capslock, char, and token-completion
@@ -161,9 +168,15 @@ export function Battle({ levelId, onExit }: BattleProps) {
   const handleKey = useCallback((token: KeyToken) => {
     if (game.gameStatus !== 'playing' || waveComplete) return;
 
-    // Handle CapsLock toggle
+    // Handle CapsLock toggle — only when the current spell expects it
+    // (i.e., a capslock token or requiresCapsLock is set). This prevents
+    // accidental toggles on L1–L10 lowercase levels from breaking the
+    // next keypress.
     if (token.kind === 'capslock') {
-      game.setCapLock(!game.capLockOn);
+      const spellExpectsCaps = currentTarget.kind === 'capslock' || currentSpell?.requiresCapsLock === true;
+      if (spellExpectsCaps) {
+        game.setCapLock(!game.capLockOn);
+      }
       // If the current spell has capslock as a token, advance past it
       if (currentTarget.kind === 'capslock') {
         if (tokenIdx + 1 >= currentSpell!.tokens.length) {

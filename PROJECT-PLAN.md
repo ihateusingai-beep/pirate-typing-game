@@ -263,6 +263,15 @@ typing game/
   - typecheck + build 全綠，46 modules，264KB JS / 19.45KB CSS gzipped 80.87/4.64
   - dev server 啟動正常，HTTP 200，Battle.tsx 50KB transform OK
   - **v0.2.0 shippable** ✅
+- **2026-10-14 20:00–20:30** — Phase 5 + bug audit:
+  - `git init` + 4 commits 全部 clean
+  - `SpellBook` 頁面：16 級 grid、6 個 filter tab、1–3 星、lock 狀態
+  - MainMenu 加「咒語書」入口
+  - Bug audit (memory rule 13, 5-bug-family)：
+    - F5 fix：移除 unused `lastHandledRef`
+    - F1 fix：加 `timeoutsRef` + `scheduleTimeout` helper，cleanup unmount
+  - 47 modules, 269.7KB JS / 20.2KB CSS
+  - **v0.2.0 + SpellBook + bug pass shippable** ✅
 
 ---
 
