@@ -5,11 +5,12 @@
 interface MainMenuProps {
   onStart: () => void;
   onResetProgress?: () => void;
+  onOpenSpellBook?: () => void;
   highestLevelUnlocked: number;
   starsByLevel: Record<number, 0 | 1 | 2 | 3>;
 }
 
-export function MainMenu({ onStart, onResetProgress, highestLevelUnlocked, starsByLevel }: MainMenuProps) {
+export function MainMenu({ onStart, onResetProgress, onOpenSpellBook, highestLevelUnlocked, starsByLevel }: MainMenuProps) {
   const totalStars = Object.values(starsByLevel).reduce<number>((a, b) => a + b, 0);
 
   return (
@@ -58,11 +59,20 @@ export function MainMenu({ onStart, onResetProgress, highestLevelUnlocked, stars
           <p className="text-base mb-6 max-w-md" style={{ color: 'var(--color-wizard-ink-mute)' }}>
             透過施咒練習，由單字符開始，逐步解鎖 16 級咒語書。學打字，學英文。
           </p>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <button onClick={onStart} className="btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
               開始歷險
             </button>
+            {onOpenSpellBook && (
+              <button onClick={onOpenSpellBook} className="btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+                咒語書
+              </button>
+            )}
             {onResetProgress && (
               <button onClick={onResetProgress} className="btn-ghost text-xs">
                 重置進度

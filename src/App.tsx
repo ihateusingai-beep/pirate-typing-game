@@ -8,11 +8,12 @@ import { GameProvider } from './contexts/GameContext';
 import { MainMenu } from './pages/MainMenu';
 import { Tutorial } from './pages/Tutorial';
 import { Battle } from './pages/Battle';
+import { SpellBook } from './pages/SpellBook';
 import { loadProgress, clearProgress, recordStars } from './lib/storage';
 import { LEVELS } from './config/levels';
 import type { Progress } from './types';
 
-type Screen = 'menu' | 'tutorial' | 'battle' | 'gameover';
+type Screen = 'menu' | 'tutorial' | 'battle' | 'gameover' | 'spellbook';
 
 interface GameOverInfo {
   won: boolean;
@@ -66,6 +67,16 @@ function AppInner() {
     setScreen('menu');
   }, []);
 
+  const handleOpenSpellBook = useCallback(() => {
+    setScreen('spellbook');
+  }, []);
+
+  const handleSelectLevel = useCallback((levelId: number) => {
+    setActiveLevelId(levelId);
+    setGameOver(null);
+    setScreen('battle');
+  }, []);
+
   const handleResetProgress = useCallback(() => {
     if (confirm('確定要重置所有進度？所有星數會清除。')) {
       clearProgress();
@@ -79,8 +90,17 @@ function AppInner() {
         <MainMenu
           onStart={handleStart}
           onResetProgress={handleResetProgress}
+          onOpenSpellBook={handleOpenSpellBook}
           highestLevelUnlocked={progress.highestLevelUnlocked}
           starsByLevel={progress.starsByLevel}
+        />
+      )}
+      {screen === 'spellbook' && (
+        <SpellBook
+          highestLevelUnlocked={progress.highestLevelUnlocked}
+          starsByLevel={progress.starsByLevel}
+          onSelectLevel={handleSelectLevel}
+          onBack={handleBackToMenu}
         />
       )}
       {screen === 'tutorial' && (
