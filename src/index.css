@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* Pirate Captain's Cannon — ocean / wood / gold theme */
+@theme {
+  --color-pirate-bg: #0a1428;          /* deep ocean */
+  --color-pirate-bg2: #142a48;          /* mid ocean */
+  --color-pirate-bg3: #1e3a5f;          /* surface highlight */
+  --color-pirate-line: #2a4a72;         /* frame */
+  --color-pirate-line-soft: #1a2a40;
+  --color-pirate-ink: #f0e8d4;          /* parchment */
+  --color-pirate-ink-mute: #b8b09a;
+  --color-pirate-ink-dim: #6a6350;
+  --color-pirate-wood: #b45309;         /* ship wood */
+  --color-pirate-wood2: #78350f;        /* dark wood */
+  --color-pirate-gold: #fbbf24;
+  --color-pirate-cannon: #ef4444;       /* red cannon */
+  --color-pirate-fire: #f97316;         /* fire orange */
+  --color-pirate-ocean: #0ea5e9;        /* bright ocean highlight */
+  --color-pirate-enemy: #dc2626;        /* enemy ship red */
+  --color-pirate-boss: #7c2d12;         /* ghost ship dark red */
+  --color-pirate-cyan: #67e8f9;
+  --color-pirate-pink: #f9a8d4;
+  --color-pirate-green: #4ade80;
+
+  --font-serif: "DM Serif Display", serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-pirate-bg);
+    color: var(--color-pirate-ink);
+    overflow: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .font-serif { font-family: var(--font-serif); }
+  .font-mono { font-family: var(--font-mono); }
+
+  .scene {
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 0%, rgba(180, 83, 9, 0.08) 0%, transparent 40%),
+      linear-gradient(180deg, var(--color-pirate-bg) 0%, var(--color-pirate-bg2) 100%);
+  }
+
+  .glow-gold { box-shadow: 0 0 16px -2px var(--color-pirate-gold); }
+  .glow-cannon { box-shadow: 0 0 16px -2px var(--color-pirate-cannon); }
+  .glow-enemy { box-shadow: 0 0 16px -2px var(--color-pirate-enemy); }
+
+  .float { animation: float 2.6s ease-in-out infinite; }
+  .rock { animation: rock 2s ease-in-out infinite; }
+  .wave-roll { animation: wave-roll 6s linear infinite; }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--color-pirate-wood) 0%, var(--color-pirate-wood2) 100%);
+    color: white;
+    padding: 0.875rem 1.75rem;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px -2px rgba(180, 83, 9, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: transform 0.15s;
+    border: 1px solid var(--color-pirate-gold);
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-pirate-ink);
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.625rem;
+    font-weight: 500;
+    border: 1px solid var(--color-pirate-line);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s;
+  }
+  .btn-ghost:hover { background: var(--color-pirate-bg3); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes rock {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes wave-roll {
+  to { transform: translateX(-50%); }
+}
