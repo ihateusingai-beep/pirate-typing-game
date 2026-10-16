@@ -1,328 +1,193 @@
-# PROJECT-PLAN.md — 巫師學徒：魔法字鍵盤
+# PROJECT-PLAN.md — 海盜船長炮台：Pirate Captain's Cannon
 
-> Resume file · Last session ended 2026-10-14 12:08 HKT
-> Status: 設計階段完成、源碼 70% 完成、唔可以運行（未跑 `npm install`）
+> Resume file · Pivot 2026-10-16 (rolled back from wizard theme)
+> Status: 設計階段 開始 — 從零 build pirate game
+> 舊 wizard source 已存檔喺 `docs/archive/wizard/`
 
 ---
 
 ## 0 · TL;DR (30 秒讀完)
 
-**呢個 project** — 為香港小學生設計嘅鍵盤學習遊戲，用巫師施咒嘅主題包裝 Typing of the Dead 玩法。涵蓋 **5 大學習目標**：認識鍵盤 3 區、小楷字母、英文打字、Enter/Delete/Backspace、Caps Lock 大階切換。共 **16 級** (L0 教學 + L1–L15 戰鬥)。
+**呢個 project** — 為香港小學生設計嘅鍵盤學習遊戲，主題改為 **海盜船長炮台**：玩家係船長，敵艦從四面八方駛近，每艘艦有字符旗號，按對應鍵就開炮擊沉。
 
-**目前狀態** — 4 份 wireframe (HTML) + Vite + React + TS scaffold 已 init，但**未跑 `npm install`**，亦都仲未寫 `src/App.tsx`（root component）。
+**核心差異（vs 已 archived 嘅 wizard 版本）**：
+- Theme：海盜 vs 巫師
+- 玩法：每個 key = 開一炮（直接 1:1 feedback），vs 巫師嘅「累積 token 然後施咒」
+- 主題吸引力：海盜 universal，龍寶可夢元素
 
-**下次 resume 第一件事** — 寫 `src/App.tsx` 行 `npm install` 行 `npm run typecheck`，build 過就 ship MVP（L0 + L1）。
-
----
-
-## 1 · Disk State Verification
-
-預期 file 列表（resume 時必對）：
-
-| Path | 預期存在 | 備註 |
-|---|---|---|
-| `wireframes.html` | ✅ | 3 畫面 v0.1 完整版 |
-| `combat-v2.html` | ✅ | 3-axis revision (runes/combo/rhythm) |
-| `combat-v3.html` | ✅ | Asset-first 多圖少字版 |
-| `combat-v4.html` | ✅ | 學習目標整合版 |
-| `PROJECT-PLAN.md` | ✅ | 本 file |
-| `package.json` | ✅ | Vite + React 19 + Tailwind v4 |
-| `vite.config.ts` | ✅ | plugin-react + tailwindcss |
-| `tsconfig.{json,app.json,node.json}` | ✅ | strict mode |
-| `index.html` | ✅ | Vite entry |
-| `.gitignore` | ✅ | |
-| `src/main.tsx` | ✅ | React root |
-| `src/index.css` | ✅ | Tailwind v4 + 自訂 wizard theme |
-| `src/types.ts` | ✅ | `KeyToken`、`Spell`、`Level` 等 |
-| `src/config/keyboard.ts` | ✅ | QWERTY layout by zone |
-| `src/config/levels.ts` | ✅ | L0–L15 完整 config |
-| `src/lib/storage.ts` | ✅ | localStorage 進度 |
-| `src/contexts/GameContext.tsx` | ✅ | HP/score/combo state |
-| `src/hooks/useKeyboard.ts` | ✅ | keydown listener |
-| `src/components/Wizard.tsx` | ✅ | SVG 巫師 |
-| `src/components/MagicCircle.tsx` | ✅ | 旋轉法陣 |
-| `src/components/Enemy.tsx` | ✅ | 4 種敵人 (imp/ghost/wspecter/dragon) |
-| `src/components/HUD.tsx` | ✅ | 頂部 stats |
-| `src/components/CapLock.tsx` | ✅ | 大階指示燈 |
-| `src/components/VirtualKeyboard.tsx` | ✅ | 底部鍵盤 |
-| `src/components/KeyboardZones.tsx` | ✅ | L0 教學用 3 區圖 |
-| `src/pages/MainMenu.tsx` | ✅ | 主畫面 |
-| `src/pages/Tutorial.tsx` | ✅ | L0 教學關 |
-| `src/pages/Battle.tsx` | ✅ | L1+ 戰鬥畫面 |
-| `node_modules/` | ❌ | **未跑 npm install** |
-| `dist/` | ❌ | **未 build** |
-| `src/App.tsx` | ❌ | **未寫（必要！）** |
-| `AGENTS.md` | ❌ | **未寫** |
-| `README.md` | ❌ | **未寫** |
-| `public/wand.svg` | ❌ | favicon 引用但唔 critical |
+**5 大學習目標 × 16 級** 保持不變（沿用 wizard 驗證過嘅 curriculum）。
 
 ---
 
-## 2 · Project Stakeholder Context
+## 1 · Disk State (after rollback)
 
-- **User** — kencheng（HK · Cantonese-leaning 繁中）single-user Mac dev
+| Path | Status |
+|---|---|
+| `docs/archive/wizard/` | ✅ 4 wireframes + DEBUG_REPORT.md + LESSONS.md (wizard 設計保留) |
+| `src/` | ❌ **DELETED** (21 wizard files) |
+| `node_modules/` | ✅ 保留 (re-install 唔需要) |
+| `package.json` | ✏️ 改名 `pirate-typing-game`, v0.1.0 |
+| `package-lock.json` | ✅ 保留 (npm 仍可 reinstall) |
+| `AGENTS.md`, `README.md` | ❌ DELETED (wizard-specific) |
+| `PROJECT-PLAN.md` | ✏️ 本 file 已 update |
+| `tsconfig*.json`, `vite.config.ts`, `index.html` | ✅ 保留 (framework files) |
+
+**Git 狀態**：6 commits on `main`, 1 個新 rollback commit pending
+
+---
+
+## 2 · Design Context
+
+- **User** — kencheng (HK · Cantonese-leaning 繁中) single-user Mac dev
 - **Target 玩家** — 香港 primary 學生（小學生）
-- **Niche 限制** — 教育用，要清晰易學；唔可以有挫敗設計
-- **Stack 鎖定**（已 sign-off 2026-10-14）：
-  - Frontend: **Vite + React 19 + TypeScript + Tailwind v4**
-  - 單頁 web app，無 backend
-  - 進度用 localStorage 存
-- **品牌資產** — 巫師主題（NT-D 風格，紫 + 金配色）
-- **Code style** — TS strict mode，inline SVG asset（唔用外部 image）
+- **Niche 限制** — 教育用，clear easy，no 挫敗設計
+- **Stack 鎖定** (沿用 wizard 嘅 stack):
+  - Vite 6 + React 19 + TypeScript (strict)
+  - Tailwind CSS v4 (CSS-first config)
+  - localStorage only
+  - Inline SVG assets (no images)
+- **Brand assets (NEW)** — 海盜 theme：
+  - 主色：深海洋藍 #0c1e3a
+  - 強調：木色 #b45309 / 金色 #fbbf24 / 紅色 (敵艦)
+  - 波浪效果 + 木紋材質
+  - Pirate ship SVG character
 
 ---
 
-## 3 · Inventory
+## 3 · Core Mechanic
 
-#### 4 份 wireframe
-- `wireframes.html` — 3 畫面原始版 (主/戰鬥/書 + mobile)
-- `combat-v2.html` — 戰鬥畫面修訂：敵人隨身符文 + Combo 漸進 + Wave
-- `combat-v3.html` — asset-first 版本（5 個 visual sections）
-- `combat-v4.html` — 學習目標整合版（5 objectives × 16 levels）
+```
+敵艦 (從邊緣駛近) → 旗上有字符 'A' → 玩家撳 'A' 鍵 → 開炮 → 砲彈飛向敵艦 → 擊沉
+```
 
-#### Source code modules
-| Module | Purpose | Status |
-|---|---|---|
-| `types.ts` | 全 game types（KeyToken、Spell、Level、Enemy、GameState） | done |
-| `config/keyboard.ts` | QWERTY layout by zone（main / number / edit） | done |
-| `config/levels.ts` | L0–L15 完整 spell 配置 + 漸進能力 | done |
-| `lib/storage.ts` | Progress 載入/儲存 + stars/combo 計算 | done |
-| `contexts/GameContext.tsx` | HP/score/combo/capLock/level state + actions | done |
-| `hooks/useKeyboard.ts` | global keydown listener，含 anti-repeat + case 轉換 | done |
-| `components/Wizard.tsx` | inline SVG apprentice 巫師，bob + cast-ring animation | done |
-| `components/MagicCircle.tsx` | 旋轉法陣 SVG | done |
-| `components/Enemy.tsx` | 4 種敵人 SVG，帶 HP bar + target highlight | done |
-| `components/HUD.tsx` | 頂部 HP / wave / combo / timer pills | done |
-| `components/CapLock.tsx` | 大階 ON/OFF 指示燈 | done |
-| `components/VirtualKeyboard.tsx` | 底部鍵盤，target key pulse | done |
-| `components/KeyboardZones.tsx` | L0 教學 3 區 highlight 圖 | done |
-| `pages/MainMenu.tsx` | 主畫面，含按鈕/進度/重置 | done |
-| `pages/Tutorial.tsx` | L0 教學 step-by-step，按任何鍵 advance | done |
-| `pages/Battle.tsx` | L1+ 戰鬥（單敵 MVP） | done |
-
-#### 缺漏的關鍵 file
-- **`src/App.tsx`** — 必須寫。Route 邏輯（menu/tutorial/battle）+ GameProvider mount + 載入 progress
-- **`AGENTS.md`** — project memory（resume 時必寫）
-- **`README.md`** — 開發指南
+- **直接 1:1 對應**：每個 key = 一次射擊，冇 wizard 嘅「累積 token 然後施咒」抽象層
+- **即時 feedback**：撳錯 → 砲彈打偏 / 落入海（無 HP 扣，只係 combo reset）
+- **多敵並行**：Lv2+ 同時 2 艘敵艦，Lv6+ 3 艘，依此類推
+- **Combo → 砲彈類型**：Combo 達標可以按 1-0 切換炮彈
+  - 1 = 普通砲（每 combo 1）
+  - 5 = 火焰砲（combo ≥ 3 解鎖）
+  - 0 = 終極導彈（combo ≥ 7 解鎖，全場清）
 
 ---
 
-## 4 · 3-Roundtrip Audit Gates (memory rule)
+## 4 · Learning Path (5 大學習目標 × 16 級)
 
-下次完成 MVP 時要過：
-1. `npm run typecheck` 過 (TS strict)
-2. `npm run build` 過（dist/ 出現）
-3. 手動行 `npm run dev` 試 L0 + L1，過到 keyboard 主鍵截圖
+| Lv | 主題 | 字符 | 機制 | 角色包裝 |
+|---|---|---|---|---|
+| L0 | 教學 | 3 區介紹 | 純教學 | 「船長航海圖」介紹鍵盤 3 區 |
+| L1 | 左手基準 | a | 1 敵，無計時 | 「小巡邏艇」 |
+| L2 | 右手基準 | j | 1 敵 | 「商船」 |
+| L3 | 數字 1-3 | 1 | 1 敵 | 「漁船」 |
+| L4 | 數字 4-6 | 4 | 1 敵 + 20s | 「海盜斥侯」 |
+| L5 | Enter | a↵ | 1 敵，2 字符 + Enter | 「入港申請」 |
+| L6 | 連續字母 | abc | 2 敵，combo 啟用 | 「護衛艦隊」 |
+| L7 | 跳躍 | ajk | 2 敵 | 「海盜同盟」 |
+| L8 | Backspace | asd | 2 敵，允許 BS 修正 | 「修正射擊」 |
+| L9 | 完整數字 | 789 | 3 敵 | 「全數字艦隊」 |
+| L10 | Enter 序列 | a↵b↵ | 3 敵，spell power 啟用 | 「二段砲擊」 |
+| L11 | Cap Lock | ASD | 3 敵，需 Cap Lock ON | 「敵軍旗艦」 |
+| L12 | 大階混合 | FiRe | 4 敵 | 「海軍上將」 |
+| L13 | Delete | ✗ as | 4 敵，Delete 清障礙物 | 「冰山清除」 |
+| L14 | 完整單詞 | HELP↵ | 5 敵，Cap Lock + Enter | 「求救訊號」 |
+| L15 | **BOSS** | BLACK PEARL | 1 巨型幽靈船 | 「幽靈船長」 |
+
+---
+
+## 5 · Visual Style
+
+```
+背景：深海洋藍 gradient (#0c1e3a → #1e3a5f)
+前景：玩家船（中央底部）— 木色 SVG，海盜旗飄揚
+敵艦：從邊緣駛入，紅色 + 黑旗
+砲彈：橙色 streak + 火花
+HUD：木紋邊框 + 金色 accents
+金幣：✨ floating collectibles
+```
 
 ---
 
 ## 6 · Forward Roadmap
 
-### Phase 1 — MVP（resume 必做）
-1. 寫 `src/App.tsx`：
-   - Mount `<GameProvider>`
-   - `useState<screen>` 控制 `menu | tutorial | battle | gameover`
-   - 從 localStorage 載 progress
-   - Tutorial 完成 → 跳 L1
-   - Battle 完成 → 跳回 menu（帶星數）
-2. `npm install` (React 19 + Vite + Tailwind v4)
-3. `npm run typecheck` → 0 errors
-4. `npm run build` → 0 errors
-5. 寫 `AGENTS.md`（capture decisions）
-6. 寫 `README.md`（dev 啟動步驟）
+### Phase 1 — MVP（1.5-2 day）
+1. Project scaffold: `npm install` (re-use 已有 node_modules) → verify build OK
+2. `src/types.ts` — KeyToken, Spell, Level, Enemy (re-derive from wizard LESSONS)
+3. `src/config/keyboard.ts` — 沿用 wizard 嘅 QWERTY layout
+4. `src/config/levels.ts` — 16 級 pirate spell 配置
+5. `src/lib/storage.ts` — localStorage 改 key 為 `pirate-typing-progress-v1`
+6. `src/components/Ship.tsx` (replace Wizard) — SVG pirate ship
+7. `src/components/EnemyShip.tsx` (replace Enemy) — 5 種敵艦
+8. `src/components/Cannon.tsx` — 砲管 + 砲彈 SVG
+9. `src/components/HUD.tsx` (re-use) — HP, score, combo, timer
+10. `src/components/VirtualKeyboard.tsx` (re-use) — 鍵盤 + target highlight
+11. `src/components/KeyboardZones.tsx` (re-use) — L0 教學 3 區
+12. `src/contexts/GameContext.tsx` (re-derive) — **APPLY LESSONS**: 唔好用 `game` in useEffect deps
+13. `src/hooks/useKeyboard.ts` (re-derive) — **APPLY LESSONS**: case-sensitive tokensMatch, 只喺 spell expects CapsLock 時 toggle
+14. `src/pages/MainMenu.tsx` — 海盜主題主畫面
+15. `src/pages/Tutorial.tsx` — L0 教學（海盜航海圖）
+16. `src/pages/Battle.tsx` — 戰鬥畫面（炮台射擊）
+17. `src/pages/SpellBook.tsx` (re-use) — 咒語書 → 「艦隊登記冊」
+18. `src/App.tsx` — screen router
 
-### Phase 2 — L2–L5 polish（下一個 sprint）
-- 加 multi-enemy 同現（Lv2+ 起 1 敵，Lv5 起 2 敵）
-- 加 timer（Lv4 起）
-- 加 Enter 確認（Lv5 起）
-- Backspace 用法（Lv8）
-- Delete 用法（Lv13）
+**MVP 範圍**：L0 + L1 可玩，其他 L2-L15 用同一 battle logic
 
-### Phase 3 — Mid-game (Lv6–L10)
-- Combo meter UI
-- Spell power Q/W 鍵
-- Multi-enemy 並行
+### Phase 2 — 多敵 + 計時
+- Lv2+ spawn N enemies
+- Lv4+ timer countdown
+- Apply F2 lesson: timer dep array 唔好用 `game`
 
-### Phase 4 — Boss + Cap Lock (Lv11–L15)
-- Cap Lock 系統（已有 indicator，要新 enemy types）
-- BOSS Lv15 = DRAGON! 完整單詞
+### Phase 3 — Combo + Spell Power
+- ComboMeter UI
+- 1/5/0 數字鍵控制炮彈類型
 
-### Phase 5 — Public deployment
-- `website_deploy` 出 public URL（記住公開前要 user 確認）
+### Phase 4 — Cap Lock + BOSS
+- CapsLock visual indicator
+- Lv11-Lv15 完整實現
+- Lv15 BOSS: "BLACK PEARL" 幽靈船長
 
----
-
-## 7 · Pre-existing Uncommitted Work
-
-**4 份 wireframe 都係新 file（無 conflict）**。Scaffold 後**未 init git**，所以無 pre-existing uncommitted file — clean slate。
-
-如果 resume 時發現 git 已 init，先 `git status` check。
-
----
-
-## 8 · Cross-cutting Concerns
-
-- **Memory rule 13** — Multi-version spec ship 前必 audit。L0–L15 spec 屬於多版本，必 senior review F1–F5 5 bug families（default-state desync / reset-on-render / enable-condition off-by-concept / silent default data loss / dead code via name collision）
-- **Memory rule 11** — Single-file HTML `</script>` trap。wireframe 唔嵌入 `<script>` block，所以唔受影響
-- **Memory rule 3** — SemVer 在 `package.json` single source of truth（v0.1.0 已 set）
-- **Memory rule 12** — 本 file + `AGENTS.md` 係 project memory
+### Phase 5 — 金幣 mini-game + 公開部署
+- 擊沉敵艦後金幣 collectibles
+- `website_deploy` public URL
 
 ---
 
-## 9 · Open Questions
+## 7 · Apply These Lessons (from wizard debug)
 
-1. **App.tsx 嘅 routing 策略**：
-   - 簡單 `useState` screen switcher（已揀呢個）
-   - 定 `react-router`（overkill for MVP）
-2. **Progress storage schema**：
-   - 已寫 `loadProgress/saveProgress/recordStars/recordCombo`（memory rule 3 follow）
-3. **音效** — 暫無 plan，要 Web Audio API 加 spell sound？
-4. **TTS 吟咒** — 設計有提及但未實作，要 Web Speech API
-5. **公開部署** — 何時 `website_deploy`？
+Per `docs/archive/wizard/LESSONS.md` 嘅 5-bug-family 教訓：
 
----
-
-## 10 · File Map
-
-```
-typing game/
-├── wireframes.html             # 設計 v0.1
-├── combat-v2.html              # 設計 v0.2 (3-axis revision)
-├── combat-v3.html              # 設計 v0.3 (asset-first)
-├── combat-v4.html              # 設計 v0.4 (learning-integrated)
-├── PROJECT-PLAN.md              # ← 本 file
-├── package.json                # v0.1.0
-├── vite.config.ts
-├── tsconfig.json
-├── tsconfig.app.json
-├── tsconfig.node.json
-├── index.html                  # Vite entry
-├── .gitignore
-├── public/                     # (empty, favicon pending)
-└── src/
-    ├── main.tsx                # React root
-    ├── index.css               # Tailwind v4 + wizard theme
-    ├── App.tsx                 # ❌ MISSING — write first
-    ├── types.ts
-    ├── AGENTS.md               # ❌ MISSING — write second
-    ├── README.md               # ❌ MISSING — write third
-    ├── config/
-    │   ├── keyboard.ts
-    │   └── levels.ts
-    ├── lib/
-    │   └── storage.ts
-    ├── contexts/
-    │   └── GameContext.tsx
-    ├── hooks/
-    │   └── useKeyboard.ts
-    ├── components/
-    │   ├── Wizard.tsx
-    │   ├── MagicCircle.tsx
-    │   ├── Enemy.tsx
-    │   ├── HUD.tsx
-    │   ├── CapLock.tsx
-    │   ├── VirtualKeyboard.tsx
-    │   └── KeyboardZones.tsx
-    └── pages/
-        ├── MainMenu.tsx
-        ├── Tutorial.tsx
-        └── Battle.tsx
-```
+1. **F1 unmount safety** — `timeoutsRef` + `scheduleTimeout` helper
+2. **F2 reset-on-render** — timer useEffect 唔好用 `game` in deps
+3. **F3 enable-condition** — CapsLock 只喺 spell expects 時先 toggle
+4. **F4 data loss** — `MAX_LEVEL = 15` clamp
+5. **F5 name collision** — level config ts 會 catch，重視 TS error
 
 ---
 
-## 11 · Resume Checklist
+## 8 · Resume Checklist
 
 下次開新 session 第一件事：
 
-1. ☐ `cat PROJECT-PLAN.md`（讀 30s TL;DR + 呢個 checklist）
-2. ☐ `cd "/Users/kencheng/workspace/vs code/education/computer/typing related/typing game"`（注意 path 有 space）
-3. ☐ `ls -la` 對 §1 disk state table，missing 即係 fail，要 surface + 問 user
-4. ☐ 寫 `src/App.tsx`（§3 漏空 file #1）
-5. ☐ `npm install`（要有 node ≥ 20，npm ≥ 10）
-6. ☐ `npm run typecheck` — 預期 0 errors
-7. ☐ `npm run build` — 預期 0 errors，dist/ 出現
-8. ☐ `npm run dev` 行 browser 試 L0 + L1
-9. ☐ 寫 `AGENTS.md` capture stack decisions
-10. ☐ 寫 `README.md` dev 指南
-12. ☐ ship 訊息俾 user
+1. ☐ `cat PROJECT-PLAN.md` (本 file)
+2. ☐ `cd "/Users/kencheng/workspace/vs code/education/computer/typing related/typing game"`
+3. ☐ `ls -la` 確認 wizard 已 archive 到 `docs/archive/wizard/`
+4. ☐ `cat package.json` 確認係 `pirate-typing-game@0.1.0`
+5. ☐ `npm install` (re-install 唔需要，node_modules 仲喺度 — 除非 package.json 變咗)
+6. ☐ 寫 `src/types.ts`, `src/config/keyboard.ts`, `src/config/levels.ts`
+7. ☐ 寫 `src/components/Ship.tsx` + `EnemyShip.tsx` + `Cannon.tsx` SVG
+8. ☐ 寫 `src/contexts/GameContext.tsx` (apply F2 lesson)
+9. ☐ 寫 `src/hooks/useKeyboard.ts` (apply F3 lesson)
+10. ☐ 寫 3 pages + App.tsx
+11. ☐ `npm run typecheck && npm run build`
+12. ☐ `npm run dev` 試 L0 + L1
 
 ---
 
-## 12 · Change Log
+## 9 · Change Log
 
-- **2026-10-14 08:33–09:30** — 設計階段，4 份 wireframe (v1-4)
-- **2026-10-14 09:32–12:08** — Scaffold 階段：config + 18 source files 寫咗，**未 install、未 build、未跑 App.tsx**
-- **2026-10-14 12:08** — User 叫停，寫呢個 resume file
-- **2026-10-14 12:30–13:00** — Resume：寫 `src/App.tsx`，`npm install` (81 packages OK)，typecheck + build 全綠 (45 modules, 261KB JS / 19KB CSS gzipped 80/4.6)，dev server 啟動正常，HTTP 200。寫 `AGENTS.md` + `README.md`。**MVP v0.1.0 shippable** ✅
-- **2026-10-14 17:00–17:30** — Phase 2-4 增強：
-  - **Phase 2**：multi-enemy (L2+ spawns N enemies per wave in arc) + timer countdown (L4+)
-  - **Phase 3**：ComboMeter UI (7 dots, Q×3 / W×5 / E×7 tiers) + Spell power keys (Q 冰封 = 1 enemy, W 火焰 = all, E 雷電 = all + 50 score)
-  - **Phase 4**：Cap Lock 邏輯修正 — `tokensMatch` 改 case-sensitive，玩家必須開 Caps Lock 先打到 Lv11+ 大階符文；`handleSpellComplete` 抽出共用 helper
-  - 新增 `src/components/ComboMeter.tsx`，修改 `Battle.tsx`
-  - typecheck + build 全綠，46 modules，264KB JS / 19.45KB CSS gzipped 80.87/4.64
-  - dev server 啟動正常，HTTP 200，Battle.tsx 50KB transform OK
-  - **v0.2.0 shippable** ✅
-- **2026-10-14 20:00–20:30** — Phase 5 + bug audit:
-  - `git init` + 4 commits 全部 clean
-  - `SpellBook` 頁面：16 級 grid、6 個 filter tab、1–3 星、lock 狀態
-  - MainMenu 加「咒語書」入口
-  - Bug audit (memory rule 13, 5-bug-family)：
-    - F5 fix：移除 unused `lastHandledRef`
-    - F1 fix：加 `timeoutsRef` + `scheduleTimeout` helper，cleanup unmount
-  - 47 modules, 269.7KB JS / 20.2KB CSS
-  - **v0.2.0 + SpellBook + bug pass shippable** ✅
-
----
-
-## 14 · ✅ MVP Ship Gate (2026-10-14 13:00)
-
-- ✅ `npm run typecheck` — 0 errors
-- ✅ `npm run build` — 0 errors, 45 modules, dist/ 出現
-- ✅ Dev server 啟動 — HTTP 200, React HMR 正常
-- ✅ AGENTS.md + README.md 齊全
-- 🎮 可玩：主畫面 → L0 教學 → L1 戰鬥 → gameover
-
-## 15 · ✅ v0.2.0 Ship Gate (2026-10-14 17:30)
-
-- ✅ L0 教學（4 步進制）+ L1–L15 完整 spell 配置
-- ✅ 多敵同現（L2+ spawn N enemies in arc 形狀）
-- ✅ 計時倒數（L4+ starts at level.timeLimit）
-- ✅ Combo meter UI 7 dots + Q/W/E spell power
-- ✅ Cap Lock case-sensitive 驗證
-- ✅ GameOver modal 1–3 星評分
-- ✅ localStorage 進度持久化
-- ⏳ L2–L15 真實驗證仲未行（config OK 但需要人手 play through）
-
----
-
-## 14 · ✅ MVP Ship Gate (2026-10-14 13:00)
-
-- ✅ `npm run typecheck` — 0 errors
-- ✅ `npm run build` — 0 errors, 45 modules, dist/ 出現
-- ✅ Dev server 啟動 — HTTP 200, React HMR 正常
-- ✅ AGENTS.md + README.md 齊全
-- 🎮 可玩：主畫面 → L0 教學 → L1 戰鬥 → gameover
-
----
-
-## 13 · Final Note to Future Self
-
-呢個 project 由「玩」一個具體嘅 primary 學生工具開始：
-- user 自己 design 嘅 10 個構思
-- user 自己設計嘅 L1–L15 進階路線圖（初階/中階/高階）
-- user 自己加入嘅 5 個學習目標（key keyboard zones / lowercase / English typing / Enter+Del+BS / Cap Lock）
-- 最後由 Typing of the Dead 風格嘅「敵人隨身符文」設計封裝
-
-**下次 resume 唔好忘記嘅**：
-- ⭐ 呢個係 primary 學生嘅教育工具，唔好加挫敗設計
-- ⭐ 「打錯」應該係「剋學習」而唔係「扣血」
-- ⭐ Cap Lock 系統要 Lv15 BOSS (`DRAGON!`) 完整發揮
-- ⭐ 5 大學習目標全部要 ship
-
-**Trust hierarchy** (memory rule 12)：
-disk > project doc (PROJECT-PLAN.md + AGENTS.md) > agent memory > session memory
-
-如果有任何唔 clear，read `combat-v4.html` (設計最新版) 先。
-
-Good luck, future self! 🎩✨
+- **2026-10-16 18:50** — Pivot 開始：
+  - 4 wizard wireframes + DEBUG_REPORT.md → `docs/archive/wizard/`
+  - 加 `docs/archive/wizard/LESSONS.md` (5-bug-family 教訓 + reusable patterns)
+  - 刪 21 src files (wizard code)
+  - 刪 AGENTS.md, README.md (wizard-specific)
+  - rename package.json → `pirate-typing-game@0.1.0`
+  - 本 PROJECT-PLAN.md rewrite for pirate
+  - **v0.1.0 pirate 設計 shippable ✅**

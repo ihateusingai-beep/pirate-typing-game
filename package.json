@@ -1,9 +1,9 @@
 {
-  "name": "wizard-typing-game",
+  "name": "pirate-typing-game",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.1.0",
   "type": "module",
-  "description": "巫師學徒：魔法字鍵盤 — Keyboard learning game for primary school",
+  "description": "海盜船長炮台：Pirate Captain's Cannon — Keyboard learning game for primary school",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
