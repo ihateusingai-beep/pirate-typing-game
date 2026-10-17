@@ -210,3 +210,54 @@ Per `docs/archive/wizard/LESSONS.md` 嘅 5-bug-family 教訓：
 | F1-F5 LESSONS applied | ✅ code review 5 個 bug family 全部 pre-fixed |
 | L0 教學 + L1 可玩 | ✅ MVP scope 完整 |
 | git | ✅ 8 commits clean, working tree clean |
+
+---
+
+## 11 · v0.1.1 — L2-L15 Manual Verification Fixes (2026-10-17)
+
+### Bugs found via L4/L15 manual play-through (Browser tool via dev hook)
+
+1. **Timer never starts on initial mount** (CRITICAL — affected L4–L15)
+   - `Battle.tsx` timer `useEffect` deps excluded `game.gameStatus`
+   - On mount: `game.gameStatus='idle'` → effect early-returns
+   - `setLevel()` flips to `'playing'` but no dep change → effect never re-runs
+   - Symptom: HUD had no ⏱ Time stat on every timed level
+   - Fix: add `game.gameStatus` to deps (1 line)
+   - Console trace confirmed fix: 20.0s → 19.9s → ... ticks correctly
+
+2. **Timer HUD stat hidden behind 撤退 button** (visual)
+   - 撤退 button at `top-3 right-3 z-20` overlapped with rightmost HUD item
+   - Timer was placed AFTER `flex-1` spacer → ended up at right edge → covered
+   - Fix: move Timer before `flex-1` (visible in main HUD row); also moved 撤退 to `top-14` to clear HUD vertically
+
+### Dev hook added (kept in tree, gated by URL param)
+- `?devBattle=N` jumps directly into battle for level N (1..15)
+- Used to bypass Browser tool click unreliability for edge-case verification
+- Production-safe (no effect without URL param)
+
+### Verified visually (screenshots)
+- L2 (single enemy, right-hand j/k/l) ✅
+- L4 (timer ticking 20.0s → 19.5s+) ✅
+
+### Verified by static code review (Browser keystroke tests blocked by Browser tool ref issues)
+- L3 (numbers row) — tokensMatch handles digits ✓
+- L5 (Enter confirm) — tokensMatch returns true for kind='enter' ✓
+- L6 (continuous letters, combo enabled) — handleKey path correct ✓
+- L8 (Backspace correction) — `if (level.backspaceEnabled && tokenIdx > 0)` gate ✓
+- L10 (Enter sequence + spell power) — Enter handled same as L5 ✓
+- L11 (Caps Lock first time) — F3 lesson applied (conditional CapsLock toggle) ✓
+- L13 (Delete) — MVP consumes without effect (per design) ✓
+- L14 (full word HELP) — case-sensitive tokensMatch + capsLockOn path correct ✓
+- L15 (BOSS BLACK PEARL) — same as L14 with Enter ✓
+
+### Known minor UX issues (not blocking)
+- **ComboMeter tier labels confusing** (`src/components/ComboMeter.tsx:59-62`)
+  - tier3 → "5 火焰" (cyan), tier5 → "5 火球" (fire), tier7 → "0 導彈" (gold)
+  - "5 火球" suggests pressing 5 unlocks fireball at combo≥5, but the actual mechanic is 5=fire (unlocks at ≥3)
+  - Fix later: change "5 火球" to "Combo 5" or remove
+- **CapsLock HUD indicator visibility**
+  - CapLock component renders to right of HUD row, sometimes clipped at small viewport widths
+  - Not breaking, just cosmetic — verify on tablet/desktop
+
+### Next session resumes
+- Pick: address ComboMeter UX, or move to next phase (deploy, mobile testing, animations)
