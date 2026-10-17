@@ -1,9 +1,12 @@
 // ============================================================================
-// ComboMeter — pirate version (7 dots, Q×3 ice / W×5 fire / E×7 ult)
+// ComboMeter — pirate version (7 dots)
 // 1/5/0 數字鍵 control cannon type:
 //   1 = normal (always available)
 //   5 = fire (combo ≥ 3)
 //   0 = ultimate (combo ≥ 7)
+// Tier labels show ONLY cannon-type key + name (combo thresholds are shown
+// visually via the 7 dots above — adding "Combo N" labels would mislead kids
+// into thinking pressing 5 at combo≥5 unlocks something new).
 // ============================================================================
 
 interface ComboMeterProps {
@@ -13,7 +16,6 @@ interface ComboMeterProps {
 
 export function ComboMeter({ combo, maxDots = 7 }: ComboMeterProps) {
   const tier3 = combo >= 3;
-  const tier5 = combo >= 5;
   const tier7 = combo >= 7;
 
   return (
@@ -56,9 +58,8 @@ export function ComboMeter({ combo, maxDots = 7 }: ComboMeterProps) {
         })}
       </div>
       <div className="flex items-center gap-2 mt-1 text-[9px] font-mono">
-        <Tier active={tier3} label="5 火焰" color="var(--color-pirate-cyan)" />
-        <Tier active={tier5} label="5 火球" color="var(--color-pirate-fire)" />
-        <Tier active={tier7} label="0 導彈" color="var(--color-pirate-gold)" />
+        <Tier active={tier3} label="按 5 火焰" color="var(--color-pirate-cyan)" />
+        <Tier active={tier7} label="按 0 導彈" color="var(--color-pirate-gold)" />
       </div>
     </div>
   );

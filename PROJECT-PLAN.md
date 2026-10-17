@@ -261,3 +261,37 @@ Per `docs/archive/wizard/LESSONS.md` 嘅 5-bug-family 教訓：
 
 ### Next session resumes
 - Pick: address ComboMeter UX, or move to next phase (deploy, mobile testing, animations)
+
+---
+
+## 12 · v0.1.1 — Phase 1 Polish (2026-10-17)
+
+### Scope (Path A — pre-deploy hygiene)
+
+| Item | Status |
+|---|---|
+| Bump `v0.1.0 → v0.1.1` (SemVer rule 3) | ✅ |
+| Remove dev hook `?devBattle=N` from App.tsx | ✅ |
+| Fix ComboMeter tier5 label (removed misleading '5 火球') | ✅ |
+| Extract `tokensMatch`/`tokenDisplay` → `src/lib/spellMatch.ts` | ✅ |
+| Extract `calculateStars` → `src/lib/stars.ts` | ✅ |
+| Set up Vitest + jsdom | ✅ |
+| 56 unit tests across 5 files | ✅ all passing |
+
+### Test coverage (deterministic logic)
+
+| File | Tests | What it locks in |
+|---|---|---|
+| `src/lib/spellMatch.test.ts` | 9 | F3 lesson (case-sensitive), enter/space/delete/capslock kind-only match, arrow direction |
+| `src/lib/stars.test.ts` | 7 | 3/2/1/0 star thresholds, divide-by-zero guard |
+| `src/lib/storage.test.ts` | 16 | localStorage round-trip, malformed JSON, forward-compat merge, MAX_LEVEL clamp, best-of stars, replay-safety on `highestLevelUnlocked`, bestCombo no-regress |
+| `src/types.test.ts` | 12 | `keyEventToChar` enter/backspace/delete/capslock/arrows + lowercase-uppercase toggle, `tokenToKey` roundtrip, null on F-keys |
+| `src/config/levels.test.ts` | 12 | 16 levels unique IDs, curriculum invariants (L4=first timer, L6=first combo, L11=first caps), spell IDs unique, enemiesPerWave scaling, boss tier L15 |
+
+### Dev hook removed
+
+The `?devBattle=N` URL param hack was useful for L2–L15 manual verification but unsafe for production (any user could skip the menu and jump to BOSS). Replaced by `src/lib/spellMatch.ts` + `src/lib/stars.ts` extraction + Vitest — deterministic logic now testable without the hack.
+
+### Next: Path B (field validation) or Phase 2
+
+Recommended: **Path B** — `website_deploy` + 2–3 primary students test L1–L15 + collect timer pressure / Caps Lock intuition / sprite density feedback. Without field data, we're blind.

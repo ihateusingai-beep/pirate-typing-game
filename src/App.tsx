@@ -3,7 +3,7 @@
 // Mounts GameProvider, holds screen state, loads progress from localStorage
 // ============================================================================
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { GameProvider } from './contexts/GameContext';
 import { MainMenu } from './pages/MainMenu';
 import { Tutorial } from './pages/Tutorial';
@@ -26,18 +26,6 @@ function AppInner() {
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
   const [activeLevelId, setActiveLevelId] = useState<number>(1);
   const [gameOver, setGameOver] = useState<GameOverInfo | null>(null);
-
-  // Dev hook: ?devBattle=N jumps directly into battle for level N (1..15).
-  // Used for manual edge-case verification without menu clicks.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const battleLevel = Number(params.get('devBattle'));
-    if (Number.isInteger(battleLevel) && battleLevel >= 1 && battleLevel <= 15) {
-      setActiveLevelId(battleLevel);
-      setScreen('battle');
-    }
-  }, []);
 
   const handleStart = useCallback(() => {
     const next = progress.highestLevelUnlocked > 0 ? progress.highestLevelUnlocked : 1;

@@ -16,6 +16,8 @@ import { EnemyShip } from '../components/EnemyShip';
 import { SeaBackground } from '../components/SeaBackground';
 import { ComboMeter } from '../components/ComboMeter';
 import { getLevel } from '../config/levels';
+import { tokensMatch, tokenDisplay } from '../lib/spellMatch';
+import { calculateStars } from '../lib/stars';
 import type { KeyToken, Spell } from '../types';
 
 interface BattleProps {
@@ -374,34 +376,4 @@ export function Battle({ levelId, onExit }: BattleProps) {
   );
 }
 
-function tokensMatch(a: KeyToken, b: KeyToken): boolean {
-  if (a.kind !== b.kind) return false;
-  if (a.kind === 'char' && b.kind === 'char') {
-    // Case-sensitive (F3 lesson)
-    return a.value === b.value;
-  }
-  if (a.kind === 'arrow' && b.kind === 'arrow') {
-    return a.direction === b.direction;
-  }
-  return true;
-}
-
-function tokenDisplay(token: KeyToken): string {
-  switch (token.kind) {
-    case 'char': return token.value.toUpperCase();
-    case 'enter': return '↵';
-    case 'backspace': return '⌫';
-    case 'delete': return '⌦';
-    case 'capslock': return '⇪';
-    case 'arrow':
-      return { up: '↑', down: '↓', left: '←', right: '→' }[token.direction];
-  }
-}
-
-function calculateStars(mistakes: number, total: number): 0 | 1 | 2 | 3 {
-  const rate = mistakes / total;
-  if (rate <= 0.5) return 3;
-  if (rate <= 1) return 2;
-  if (rate <= 2) return 1;
-  return 0;
-}
+// (tokensMatch, tokenDisplay, calculateStars are imported from src/lib/* for unit testing)

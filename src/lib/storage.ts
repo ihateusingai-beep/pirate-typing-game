@@ -7,6 +7,9 @@ import type { Progress } from '../types';
 const STORAGE_KEY = 'pirate-typing-progress-v1';
 const MAX_LEVEL = 15;
 
+/** Exposed for tests + future migrations */
+export const STORAGE_KEY_PUBLIC = STORAGE_KEY;
+
 const DEFAULT_PROGRESS: Progress = {
   highestLevelUnlocked: 0,
   starsByLevel: {},
