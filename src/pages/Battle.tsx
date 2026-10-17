@@ -105,7 +105,9 @@ export function Battle({ levelId, onExit }: BattleProps) {
     setEnemies(newEnemies);
   }, [level.spells, level.enemiesPerWave]);
 
-  // Timer countdown — F2 lesson: do NOT include `game` in deps
+  // Timer countdown — F2 lesson: do NOT include `game` full value in deps,
+  // but DO include `game.gameStatus` so the effect re-runs when setLevel flips
+  // status from 'idle' to 'playing' on initial mount.
   useEffect(() => {
     if (level.timeLimit <= 0) return;
     if (game.gameStatus !== 'playing' || waveComplete) return;
@@ -127,7 +129,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spellIdx, levelId, level.timeLimit, waveComplete]);
+  }, [spellIdx, levelId, level.timeLimit, waveComplete, game.gameStatus]);
 
   // Spell complete handler
   const handleSpellComplete = useCallback(() => {
@@ -359,7 +361,7 @@ export function Battle({ levelId, onExit }: BattleProps) {
       {/* Exit button */}
       <button
         onClick={() => onExit(false, 0)}
-        className="absolute top-3 right-3 z-20 px-2.5 py-1.5 rounded text-xs flex items-center gap-1.5"
+        className="absolute top-14 right-3 z-20 px-2.5 py-1.5 rounded text-xs flex items-center gap-1.5"
         style={{
           background: 'rgba(10, 20, 40, 0.85)',
           border: '1px solid var(--color-pirate-line)',

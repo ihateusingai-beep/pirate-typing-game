@@ -15,11 +15,11 @@ export function HUD() {
       <Stat icon="💰" label="Score" value={score.toLocaleString()} color="gold" />
       <Stat icon="🔥" label="Combo" value={`×${combo}`} color="fire" />
       <CannonTypeBadge type={cannonType} />
-      <div className="flex-1" />
-      <CapLock on={capLockOn} />
       {remainingSeconds > 0 && (
         <Stat icon="⏱" label="Time" value={`${remainingSeconds.toFixed(1)}s`} color="cyan" />
       )}
+      <div className="flex-1" />
+      <CapLock on={capLockOn} />
     </div>
   );
 }

@@ -191,3 +191,22 @@ Per `docs/archive/wizard/LESSONS.md` 嘅 5-bug-family 教訓：
   - rename package.json → `pirate-typing-game@0.1.0`
   - 本 PROJECT-PLAN.md rewrite for pirate
   - **v0.1.0 pirate 設計 shippable ✅**
+- **2026-10-16 20:00–21:00** — Phase 1 MVP build:
+  - 寫 16 個 src files (types, config/keyboard+levels, lib/storage, contexts/GameContext, hooks/useKeyboard, 9 components + pages, App.tsx, main.tsx, index.css)
+  - Apply F1-F5 wizard LESSONS 全部 (timeoutsRef, no `game` in deps, conditional CapsLock, MAX_LEVEL=15)
+  - 1 build error fix (setCannonType name collision — F5 親身驗證)
+  - typecheck 0 errors, build 47 modules · 273.62KB JS / 20.20KB CSS
+  - **v0.1.0 pirate MVP shippable ✅**
+
+---
+
+## 10 · ✅ v0.1.0 Pirate MVP Ship Gate
+
+| Check | Result |
+|---|---|
+| typecheck | ✅ 0 errors |
+| build | ✅ 47 modules · 273.62KB JS / 20.20KB CSS (gzipped 83/4.8) |
+| 5 學習目標 × 16 級 | ✅ 全部 ship 喺 levels.ts |
+| F1-F5 LESSONS applied | ✅ code review 5 個 bug family 全部 pre-fixed |
+| L0 教學 + L1 可玩 | ✅ MVP scope 完整 |
+| git | ✅ 8 commits clean, working tree clean |
