@@ -140,13 +140,14 @@ export function Battle({ levelId, onExit }: BattleProps) {
     scheduleTimeout(() => {
       const next = spellIdx + 1;
       if (next >= level.spells.length) {
-        const stars = calculateStars(mistakes + 1, level.spells.length);
+        const stars = calculateStars(mistakes, level.spells.length);
         game.setStatus('won');
         onExit(true, stars);
       } else {
         setSpellIdx(next);
         setTokenIdx(0);
         setWaveComplete(false);
+        game.setWave(next + 1, level.spells.length);
         spawnWave(next);
       }
     }, 600);
@@ -158,12 +159,13 @@ export function Battle({ levelId, onExit }: BattleProps) {
 
     // F3 lesson: CapsLock only when spell expects it
     if (token.kind === 'capslock') {
-      const spellExpectsCaps = currentTarget.kind === 'capslock' || currentSpell?.requiresCapsLock === true;
+      const spellExpectsCaps =
+        currentTarget?.kind === 'capslock' || currentSpell?.requiresCapsLock === true;
       if (spellExpectsCaps) {
         game.setCapLock(!game.capLockOn);
       }
-      if (currentTarget.kind === 'capslock') {
-        if (tokenIdx + 1 >= currentSpell!.tokens.length) {
+      if (currentTarget?.kind === 'capslock') {
+        if (tokenIdx + 1 >= (currentSpell?.tokens.length ?? 0)) {
           handleSpellComplete();
         } else {
           setTokenIdx((i) => i + 1);
@@ -191,21 +193,15 @@ export function Battle({ levelId, onExit }: BattleProps) {
       }
     }
 
-    // Backspace: undo last typed char
+    // Backspace: undo last typed char (never a spell token match)
     if (token.kind === 'backspace') {
       if (level.backspaceEnabled && tokenIdx > 0) {
         setTokenIdx((i) => i - 1);
       }
       return;
     }
-    // Delete: clear obstacle
-    if (token.kind === 'delete') {
-      if (level.deleteEnabled) {
-        // MVP: just consume
-      }
-      return;
-    }
 
+    // Delete / other tokens: must match current target to advance (fixes L13)
     // Check if pressed key matches the current target
     const matches = tokensMatch(token, currentTarget);
     if (!matches) {

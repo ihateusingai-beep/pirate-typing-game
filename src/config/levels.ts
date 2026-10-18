@@ -329,7 +329,8 @@ export const LEVELS: Level[] = [
       ], requiresCapsLock: true},
     ],
     enemiesPerWave: 1,
-    timeLimit: 5,
+    // 12 tokens (Caps + BLACKPEARL + Enter) — 5s was unwinnable for primary
+    timeLimit: 30,
     comboEnabled: true,
     spellPowerEnabled: true,
     backspaceEnabled: true,

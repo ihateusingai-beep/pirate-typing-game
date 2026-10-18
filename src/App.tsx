@@ -66,8 +66,14 @@ function AppInner() {
   const handleOpenSpellBook = useCallback(() => setScreen('spellbook'), []);
 
   const handleSelectLevel = useCallback((levelId: number) => {
-    setActiveLevelId(levelId);
     setGameOver(null);
+    // L0 has no battle spells — route to tutorial instead of empty arena
+    if (levelId === 0) {
+      setActiveLevelId(1);
+      setScreen('tutorial');
+      return;
+    }
+    setActiveLevelId(levelId);
     setScreen('battle');
   }, []);
 

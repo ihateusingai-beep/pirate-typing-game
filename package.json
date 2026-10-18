@@ -1,7 +1,7 @@
 {
   "name": "pirate-typing-game",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "海盜船長炮台：Pirate Captain's Cannon — Keyboard learning game for primary school",
   "scripts": {
